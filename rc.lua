@@ -271,12 +271,12 @@ for s = 1, screen.count() do
 
     -- infoboxes funs
 
-	mynetgraphs.small.layout:connect_signal("mouse::enter", function ()
+    mynetgraphs.small.layout:connect_signal("mouse::enter", function ()
         if detailed_graphs.visible() then
             myinfobox.net[s].visible = true
         end
-	end)
-	mynetgraphs.small.layout:connect_signal("mouse::leave", function ()
+    end)
+    mynetgraphs.small.layout:connect_signal("mouse::leave", function ()
         myinfobox.net[s].visible = false
     end)
 
@@ -305,7 +305,7 @@ volume = uzful.util.volume("Master")
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
-	awful.key({}, "XF86Launch1", function () awful.util.spawn_with_shell("xtrlock") end),
+    awful.key({}, "XF86Launch1", function () awful.util.spawn_with_shell("xtrlock") end),
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
@@ -441,8 +441,8 @@ awful.rules.rules = {
                      buttons = clientbuttons } },
     { rule = { class = "MPlayer" },
       properties = { floating = true } },
-	{ rule = { class = "feh" },
-	  properties = { floating = true, maximized_vertical = true, maximized_horizontal = true } },
+    { rule = { class = "feh" },
+      properties = { floating = true, maximized_vertical = true, maximized_horizontal = true } },
     { rule = { class = "pinentry" },
       properties = { floating = true } },
     { rule = { class = "gimp" },
