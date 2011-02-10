@@ -114,26 +114,38 @@ uzful.widget.set_properties(mybat.progress, {
     border_color = nil, color = "#FFFFFF" })
 vicious.register(mybat.progress, vicious.widgets.bat, "$2", 45, "BAT0")
 
+myimgbat = uzful.util.listen.vicious("text", function (val)
+        if val == "-" then
+            mybat.draw_image_first()
+        elseif val == "+" or val == "↯" then
+            mybat.draw_progress_first()
+        end
+    end )
+vicious.register(myimgbat, vicious.widgets.bat, "$1", 90, "BAT0")
+
+mynotibat = nil
 mycritbat = uzful.util.threshold(0.2,
     function ()
         mybat.progress:set_background_color(theme.bg_normal)
+        if mynotibat ~= nil then  naughty.destroy(mynotibat)  end
     end,
     function (val)
         mybat.progress:set_background_color("#8C0000")
         if val < 0.1 then
-            naughty.notify({
+            if mynotibat ~= nil then  naughty.destroy(mynotibat)  end
+            mynotibat = naughty.notify({
                 preset = naughty.config.presets.critical,
                 title = "Critical Battery Charge",
-                text = "only " .. (val*100) .. "% remaining." })
+                text =  "only " .. (val*100) .. "% remaining."})
         end
     end)
-vicious.register(mycritbat, vicious.widgets.bat, "$2", 60, "BAT0")
+vicious.register(mycritbat, vicious.widgets.bat, "$2", 90, "BAT0")
 
 
 -- Battery Text
 mybtxt = wibox.widget.textbox()
 vicious.register(mybtxt, vicious.widgets.bat,
-    '<span color="#666666" size="x-small">$3</span>', 60, "BAT0")
+    '<span color="#666666" size="x-small">$1$3</span>', 60, "BAT0")
 
 -- Temperature Text
 mytemp = wibox.widget.textbox()
