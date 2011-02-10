@@ -98,12 +98,14 @@ mymainmenu = awful.menu({ items = {
 mytextclock = awful.widget.textclock('<span size="x-small"> %a %b %d, %H:%M </span>')
 
 -- Memory Progressbar
-mymem = awful.widget.progressbar({ width = 6, height = 12 })
-uzful.widget.set_properties(mymem, {
+mymem = uzful.widget.progressimage({
+    x = 2, y = 2, width = 5, height = 10,
+    image = theme.memory, draw_image_first = false })
+uzful.widget.set_properties(mymem.progress, {
     vertical = true, background_color = theme.bg_normal,
     border_color = nil, color = "#0173FF" })
 --mymem:set_color({ "#001D40", "#535d6c", "#0173FF" })
-vicious.register(mymem, vicious.widgets.mem, "$1", 13)
+vicious.register(mymem.progress, vicious.widgets.mem, "$1", 13)
 
 -- Battery Progressbar
 mybat = uzful.widget.progressimage(
@@ -273,11 +275,11 @@ for s = 1, screen.count() do
             function () return s == 1 and wibox.widget.systray() or nil end,
             mycpugraphs.small.widget,
             mynetgraphs.small.layout,
-            mymem,
             mytemp,
             mytextclock,
             mybtxt,
             mybat,
+            mymem,
             mylayoutbox[s] }
     })
 
