@@ -118,12 +118,14 @@ mycritbat = uzful.util.threshold(0.2,
     function ()
         mybat.progress:set_background_color(theme.bg_normal)
     end,
-    function ()
+    function (val)
         mybat.progress:set_background_color("#8C0000")
-        naughty.notify({
-            preset = naughty.config.presets.critical,
-            title = "Critical Battery Charge",
-            text = "only " .. (val*100) .. "% remaining." })
+        if val < 0.1 then
+            naughty.notify({
+                preset = naughty.config.presets.critical,
+                title = "Critical Battery Charge",
+                text = "only " .. (val*100) .. "% remaining." })
+        end
     end)
 vicious.register(mycritbat, vicious.widgets.bat, "$2", 60, "BAT0")
 
@@ -483,3 +485,7 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 require("autostart")
 
 -- }}}
+ -- Standard awesome library
+require("awful")
+require("awful.autofocus")
+require("awful.rules")
