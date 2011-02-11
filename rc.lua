@@ -95,7 +95,28 @@ mymainmenu = awful.menu({ items = {
 
 -- {{{ Wibox
 -- Create a textclock widget
-mytextclock = awful.widget.textclock('<span size="x-small"> %a %b %d, %H:%M </span>')
+mytextclock = awful.widget.textclock('<span size="x-small"> %H:%M </span>')
+mycal = uzful.widget.calendar({
+    all = '<span size="small">$1</span>',
+    head = '<span color="#666666">$1</span>',
+    week = '<span color="#999999">$1</span>',
+    day  = '<span color="#BBBBBB">$1</span>',
+    number  = '<span color="#EEEEEE">$1</span>',
+    current = '<span color="green">$1</span>',
+})
+
+mytextclock:buttons(awful.util.table.join(
+    awful.button({         }, 1, function()  mycal:switch_month(-1)  end),
+    awful.button({         }, 2, function()  mycal:now()             end),
+    awful.button({         }, 3, function()  mycal:switch_month( 1)  end),
+    awful.button({         }, 4, function()  mycal:switch_month(-1)  end),
+    awful.button({         }, 5, function()  mycal:switch_month( 1)  end),
+    awful.button({ 'Shift' }, 1, function()  mycal:switch_year(-1)  end),
+    awful.button({ 'Shift' }, 2, function()  mycal:now()             end),
+    awful.button({ 'Shift' }, 3, function()  mycal:switch_year( 1)  end),
+    awful.button({ 'Shift' }, 4, function()  mycal:switch_year(-1)  end),
+    awful.button({ 'Shift' }, 5, function()  mycal:switch_year( 1)  end)
+))
 
 -- Memory Progressbar
 mymem = uzful.widget.progressimage({
@@ -191,7 +212,7 @@ mylayoutmenu = uzful.menu.layouts(layouts)
 
 -- Create a wibox for each screen and add it
 mywibox = {}
-myinfobox = { net = {}, cpu = {} }
+myinfobox = { net = {}, cpu = {}, cal = {} }
 mypromptbox = {}
 mylayoutbox = {}
 mytaglist = {}
@@ -263,6 +284,13 @@ for s = 1, screen.count() do
             width = mycpugraphs.big.width,
             x = screen[s].geometry.width - mycpugraphs.big.width,
             ontop = true, visible = false })
+    myinfobox.cal[s] = uzful.widget.wibox({ screen = s, type = "notification",
+            widget = mycal.widget,
+            y = theme.menu_height,
+            height = mycal.height,
+            width = mycal.width,
+            x = screen[s].geometry.width - mycal.width,
+            ontop = true, visible = false })
 
     local layout = uzful.layout.build({
         layout = wibox.layout.align.horizontal,
@@ -273,8 +301,8 @@ for s = 1, screen.count() do
         middle = mytasklist[s],
         right = { layout = wibox.layout.fixed.horizontal,
             function () return s == 1 and wibox.widget.systray() or nil end,
-            mycpugraphs.small.widget,
             mynetgraphs.small.layout,
+            mycpugraphs.small.widget,
             mytemp,
             mytextclock,
             mybtxt,
@@ -304,6 +332,14 @@ for s = 1, screen.count() do
     end)
     mycpugraphs.small.widget:connect_signal("mouse::leave", function ()
         myinfobox.cpu[s].visible = false
+    end)
+
+    mytextclock:connect_signal("mouse::enter", function ()
+        myinfobox.cal[s].visible = true
+        mycal:update()
+    end)
+    mytextclock:connect_signal("mouse::leave", function ()
+        myinfobox.cal[s].visible = false
     end)
 
 end
