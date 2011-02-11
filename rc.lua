@@ -533,8 +533,3 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 
 require("autostart")
 
--- }}}
- -- Standard awesome library
-require("awful")
-require("awful.autofocus")
-require("awful.rules")
