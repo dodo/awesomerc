@@ -177,8 +177,7 @@ vicious.register(mytemp, vicious.widgets.thermal,
 
 -- net usage graphs
 
-mynetgraphs = uzful.widget.netgraphs({
-    label_height = 13, default = "wlan0",
+mynetgraphs = uzful.widget.netgraphs({ default = "wlan0",
     up_fgcolor = "#D00003", down_fgcolor = "#95D043",
     highlight = ' <span size="x-small"><b>$1</b></span>',
     normal    = ' <span color="#666666" size="x-small">$1</span>',
@@ -193,7 +192,7 @@ end
 
 -- CPU graphs
 
-mycpugraphs = uzful.widget.cpugraphs({ label_height = 13,
+mycpugraphs = uzful.widget.cpugraphs({
     fgcolor = "#D0752A", bgcolor = theme.bg_normal,
     load = { interval = 20,
         text = ' <span size="x-small"><span color="#666666">$1</span>' ..
