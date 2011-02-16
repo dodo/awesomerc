@@ -172,8 +172,16 @@ vicious.register(mybtxt, vicious.widgets.bat,
 
 -- Temperature Text
 mytemp = wibox.widget.textbox()
-vicious.register(mytemp, vicious.widgets.thermal,
-    '<span color="#666666" size="x-small">$1°</span>', 30, "thermal_zone0")
+mycrittemp = uzful.util.threshold(0.8,
+    function (val)
+        mytemp:set_markup('<span color="red" size="small">' ..
+            (val*100) .. '°</span>')
+    end,
+    function (val)
+        mytemp:set_markup('<span color="#666666" size="x-small">' ..
+            (val*100) .. '°</span>')
+    end)
+vicious.register(mycrittemp, vicious.widgets.thermal, "$1", 30, "thermal_zone0")
 
 -- net usage graphs
 
