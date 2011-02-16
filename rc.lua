@@ -168,7 +168,7 @@ vicious.register(mycritbat, vicious.widgets.bat, "$2", 90, "BAT0")
 -- Battery Text
 mybtxt = wibox.widget.textbox()
 vicious.register(mybtxt, vicious.widgets.bat,
-    '<span color="#666666" size="x-small">$1$3</span>', 60, "BAT0")
+    '<span size="small">$1$3 $2%</span>', 60, "BAT0")
 
 -- Temperature Text
 mytemp = wibox.widget.textbox()
@@ -211,7 +211,7 @@ mylayoutmenu = uzful.menu.layouts(layouts)
 
 -- Create a wibox for each screen and add it
 mywibox = {}
-myinfobox = { net = {}, cpu = {}, cal = {} }
+myinfobox = { net = {}, cpu = {}, cal = {}, bat = {} }
 mypromptbox = {}
 mylayoutbox = {}
 mytaglist = {}
@@ -290,6 +290,14 @@ for s = 1, screen.count() do
             width = mycal.width,
             x = screen[s].geometry.width - mycal.width,
             ontop = true, visible = false })
+    local w, h = mybtxt:fit(-1, -1)
+    myinfobox.bat[s] = uzful.widget.wibox({ screen = s, type = "notification",
+            widget = mybtxt,
+            y = theme.menu_height,
+            height = h,
+            width = w,
+            x = screen[s].geometry.width - w,
+            ontop = true, visible = false })
 
     local layout = uzful.layout.build({
         layout = wibox.layout.align.horizontal,
@@ -304,7 +312,6 @@ for s = 1, screen.count() do
             mycpugraphs.small.widget,
             mytemp,
             mytextclock,
-            mybtxt,
             mybat,
             mymem,
             mylayoutbox[s] }
@@ -333,12 +340,21 @@ for s = 1, screen.count() do
         myinfobox.cpu[s].visible = false
     end)
 
+
     mytextclock:connect_signal("mouse::enter", function ()
         myinfobox.cal[s].visible = true
         mycal:update()
     end)
     mytextclock:connect_signal("mouse::leave", function ()
         myinfobox.cal[s].visible = false
+    end)
+
+
+    mybat:connect_signal("mouse::enter", function ()
+        myinfobox.bat[s].visible = true
+    end)
+    mybat:connect_signal("mouse::leave", function ()
+        myinfobox.bat[s].visible = false
     end)
 
 end
@@ -421,6 +437,7 @@ globalkeys = awful.util.table.join(
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
     awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
+    awful.key({ modkey,           }, "q",      function (c) c:kill()                         end),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
     awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
