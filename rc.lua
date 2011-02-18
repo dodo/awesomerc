@@ -359,6 +359,9 @@ for s = 1, screen.count() do
 
 
     mybat:connect_signal("mouse::enter", function ()
+        local w, h = mybtxt:fit(-1, -1)
+        myinfobox.bat[s].width = w
+        myinfobox.bat[s].height = h
         myinfobox.bat[s].visible = true
     end)
     mybat:connect_signal("mouse::leave", function ()
