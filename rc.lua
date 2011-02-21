@@ -363,6 +363,7 @@ for s = 1, screen.count() do
         myinfobox.bat[s].width = w
         myinfobox.bat[s].height = h
         myinfobox.bat[s].visible = true
+        myinfobox.bat[s].x = screen[s].geometry.width - w
     end)
     mybat:connect_signal("mouse::leave", function ()
         myinfobox.bat[s].visible = false
