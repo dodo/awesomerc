@@ -72,25 +72,31 @@ end
 
 detailed_graphs = uzful.menu.toggle_widgets()
 
+local menu_graph_text = function ()
+    return (detailed_graphs.visible() and "disable" or "enable") .. " graphs"
+end
+
 myfreedesktopmenu = freedesktop.menu.new()
 myawesomemenu = {
-   { "toggle graphs", detailed_graphs.toggle },
+   { menu_graph_text(), function (m)
+        detailed_graphs.toggle()
+        m.label:set_text(menu_graph_text())
+     end },
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" },
    { "restart", awesome.restart },
-   { "quit", awesome.quit }
+   { "quit", awesome.quit },
 }
 
-mymainmenu = awful.menu({ items = {
+mymainmenu = uzful.menu({
     { "awesome", myawesomemenu, beautiful.awesome_icon },
     { "Menu", myfreedesktopmenu, freedesktop.utils.lookup_icon({ icon = 'kde' }) },
     { "Debian", debian.menu.Debian_menu.Debian, freedesktop.utils.lookup_icon({ icon = 'debian-logo' }) },
     { "open terminal", terminal, freedesktop.utils.lookup_icon({ icon = 'terminal' }) },
-                                  }
                         })
 
---mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
---                                     menu = mymainmenu })
+-- mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
+--                                      menu = mymainmenu })
 -- }}}
 
 -- {{{ Wibox
