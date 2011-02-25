@@ -344,7 +344,7 @@ for s = 1, screen.count() do
     -- infoboxes funs
 
     mynotification[s].text:buttons(awful.util.table.join(
-        awful.button({ }, 2, function () mynotification[s]:toggle_menu() end),
+        awful.button({ }, 1, function () mynotification[s]:toggle_menu() end),
         awful.button({ }, 3, function () mynotification[s]:toggle() end)
     ))
 
