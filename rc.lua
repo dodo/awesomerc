@@ -22,6 +22,7 @@ require("uzful")
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
 beautiful.init(awful.util.getdir("config") .. "/theme.lua")
+uzful.notifications.patch()
 uzful.util.patch.vicious()
 
 -- This is used later as the default terminal and editor to run.
@@ -225,6 +226,7 @@ mylayoutmenu = uzful.menu.layouts(layouts)
 
 -- Create a wibox for each screen and add it
 mywibox = {}
+mynotification = {}
 myinfobox = { net = {}, cpu = {}, cal = {}, bat = {} }
 mypromptbox = {}
 mylayoutbox = {}
@@ -281,6 +283,11 @@ for s = 1, screen.count() do
     -- Create a tasklist widget
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 
+    -- Create a notification manager widget
+    mynotification[s] = uzful.notifications(s, {
+        max = 42, menu = { theme = { menu_width = 242 } },
+        text = '<span size="small">$1</span>' })
+
     -- Create the wibox
     mywibox[s] = awful.wibox({ position = "top", screen = s, height = theme.menu_height })
     myinfobox.net[s] = uzful.widget.wibox({ screen = s, type = "notification",
@@ -322,6 +329,7 @@ for s = 1, screen.count() do
         middle = mytasklist[s],
         right = { layout = wibox.layout.fixed.horizontal,
             function () return s == 1 and wibox.widget.systray() or nil end,
+            mynotification[s].text,
             mynetgraphs.small.layout,
             mycpugraphs.small.widget,
             mytemp,
@@ -334,6 +342,11 @@ for s = 1, screen.count() do
     mywibox[s]:set_widget(layout)
 
     -- infoboxes funs
+
+    mynotification[s].text:buttons(awful.util.table.join(
+        awful.button({ }, 2, function () mynotification[s]:toggle_menu() end),
+        awful.button({ }, 3, function () mynotification[s]:toggle() end)
+    ))
 
     mynetgraphs.small.layout:connect_signal("mouse::enter", function ()
         if detailed_graphs.visible() then
