@@ -354,7 +354,6 @@ for s = 1, screen.count() do
         end
     end)
     mynetgraphs.small.layout:connect_signal("mouse::leave", function ()
-        naughty.notify({text=""..math.random(),preset = naughty.config.presets.critical})
         myinfobox.net[s].visible = false
     end)
 
@@ -365,7 +364,6 @@ for s = 1, screen.count() do
         end
     end)
     mycpugraphs.small.widget:connect_signal("mouse::leave", function ()
-        naughty.notify({text=""..math.random()})
         myinfobox.cpu[s].visible = false
     end)
 
