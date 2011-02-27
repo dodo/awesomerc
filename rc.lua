@@ -285,7 +285,7 @@ for s = 1, screen.count() do
 
     -- Create a notification manager widget
     mynotification[s] = uzful.notifications(s, {
-        max = 42, menu = { theme = { menu_width = 242 } },
+        max = 605, menu = { theme = { menu_width = 242 } },
         text = '<span size="small">$1</span>' })
 
     -- Create the wibox
@@ -354,6 +354,7 @@ for s = 1, screen.count() do
         end
     end)
     mynetgraphs.small.layout:connect_signal("mouse::leave", function ()
+        naughty.notify({text=""..math.random(),preset = naughty.config.presets.critical})
         myinfobox.net[s].visible = false
     end)
 
@@ -364,6 +365,7 @@ for s = 1, screen.count() do
         end
     end)
     mycpugraphs.small.widget:connect_signal("mouse::leave", function ()
+        naughty.notify({text=""..math.random()})
         myinfobox.cpu[s].visible = false
     end)
 
