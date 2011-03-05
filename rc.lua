@@ -153,21 +153,23 @@ myimgbat = uzful.util.listen.vicious("text", function (val)
     end )
 vicious.register(myimgbat, vicious.widgets.bat, "$1", 90, "BAT0")
 
-mynotibat = nil
+local mynotibat, mycritbat_old_val = nil, nil
 mycritbat = uzful.util.threshold(0.2,
-    function ()
+    function (val)
+        mycritbat_old_val = val
         mybat.progress:set_background_color(theme.bg_normal)
         if mynotibat ~= nil then  naughty.destroy(mynotibat)  end
     end,
     function (val)
         mybat.progress:set_background_color("#8C0000")
-        if val < 0.1 then
+        if val < 0.1 and val <= mycritbat_old_val then
             if mynotibat ~= nil then  naughty.destroy(mynotibat)  end
             mynotibat = naughty.notify({
                 preset = naughty.config.presets.critical,
                 title = "Critical Battery Charge",
                 text =  "only " .. (val*100) .. "% remaining."})
         end
+        mycritbat_old_val = val
     end)
 vicious.register(mycritbat, vicious.widgets.bat, "$2", 90, "BAT0")
 
