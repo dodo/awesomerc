@@ -292,35 +292,24 @@ for s = 1, screen.count() do
 
     -- Create the wibox
     mywibox[s] = awful.wibox({ position = "top", screen = s, height = theme.menu_height })
-    myinfobox.net[s] = uzful.widget.wibox({ screen = s, type = "notification",
+    myinfobox.net[s] = uzful.widget.infobox({ screen = s,
+            position = "top", align = "right",
             widget = mynetgraphs.big.layout,
-            y = theme.menu_height,
             height = mynetgraphs.big.height,
-            width = mynetgraphs.big.width,
-            x = screen[s].geometry.width - mynetgraphs.big.width,
-            ontop = true, visible = false })
-    myinfobox.cpu[s] = uzful.widget.wibox({ screen = s, type = "notification",
+            width = mynetgraphs.big.width })
+    myinfobox.cpu[s] = uzful.widget.infobox({ screen = s,
+            position = "top", align = "right",
             widget = mycpugraphs.big.layout,
-            y = theme.menu_height,
             height = mycpugraphs.big.height,
-            width = mycpugraphs.big.width,
-            x = screen[s].geometry.width - mycpugraphs.big.width,
-            ontop = true, visible = false })
-    myinfobox.cal[s] = uzful.widget.wibox({ screen = s, type = "notification",
-            widget = mycal.widget,
-            y = theme.menu_height,
-            height = mycal.height,
-            width = mycal.width,
-            x = screen[s].geometry.width - mycal.width,
-            ontop = true, visible = false })
-    local w, h = mybtxt:fit(-1, -1)
-    myinfobox.bat[s] = uzful.widget.wibox({ screen = s, type = "notification",
-            widget = mybtxt,
-            y = theme.menu_height,
-            height = h,
-            width = w,
-            x = screen[s].geometry.width - w,
-            ontop = true, visible = false })
+            width = mycpugraphs.big.width })
+    myinfobox.cal[s] = uzful.widget.infobox({ screen = s,
+            size = function () return mycal.width,mycal.height end,
+            position = "top", align = "right",
+            widget = mycal.widget })
+    myinfobox.bat[s] = uzful.widget.infobox({ screen = s,
+            size = function () return mybtxt:fit(-1, -1) end,
+            position = "top", align = "right",
+            widget = mybtxt })
 
     local layout = uzful.layout.build({
         layout = wibox.layout.align.horizontal,
@@ -352,43 +341,31 @@ for s = 1, screen.count() do
 
     mynetgraphs.small.layout:connect_signal("mouse::enter", function ()
         if detailed_graphs.visible() then
-            myinfobox.net[s].visible = true
+            myinfobox.net[s]:show()
         end
     end)
-    mynetgraphs.small.layout:connect_signal("mouse::leave", function ()
-        myinfobox.net[s].visible = false
-    end)
-
 
     mycpugraphs.small.widget:connect_signal("mouse::enter", function ()
         if detailed_graphs.visible() then
-            myinfobox.cpu[s].visible = true
+            myinfobox.cpu[s]:show()
         end
     end)
-    mycpugraphs.small.widget:connect_signal("mouse::leave", function ()
-        myinfobox.cpu[s].visible = false
-    end)
-
 
     mytextclock:connect_signal("mouse::enter", function ()
-        myinfobox.cal[s].visible = true
         mycal:update()
+        myinfobox.cal[s]:update()
+        myinfobox.cal[s]:show()
     end)
-    mytextclock:connect_signal("mouse::leave", function ()
-        myinfobox.cal[s].visible = false
-    end)
-
 
     mybat:connect_signal("mouse::enter", function ()
-        local w, h = mybtxt:fit(-1, -1)
-        myinfobox.bat[s].width = w
-        myinfobox.bat[s].height = h
-        myinfobox.bat[s].visible = true
-        myinfobox.bat[s].x = screen[s].geometry.width - w
+        myinfobox.bat[s]:update()
+        myinfobox.bat[s]:show()
     end)
-    mybat:connect_signal("mouse::leave", function ()
-        myinfobox.bat[s].visible = false
-    end)
+
+    mynetgraphs.small.layout:connect_signal("mouse::leave", myinfobox.net[s].hide)
+    mycpugraphs.small.widget:connect_signal("mouse::leave", myinfobox.cpu[s].hide)
+    mytextclock:connect_signal("mouse::leave", myinfobox.cal[s].hide)
+    mybat:connect_signal("mouse::leave", myinfobox.bat[s].hide)
 
 end
 -- }}}
