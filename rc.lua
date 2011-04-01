@@ -89,7 +89,7 @@ myawesomemenu = {
    { "quit", awesome.quit },
 }
 
-mymainmenu = uzful.menu({
+mymainmenu = awful.menu({ max = 100,
     { "awesome", myawesomemenu, beautiful.awesome_icon },
     { "Menu", myfreedesktopmenu, freedesktop.utils.lookup_icon({ icon = 'kde' }) },
     { "Debian", debian.menu.Debian_menu.Debian, freedesktop.utils.lookup_icon({ icon = 'debian-logo' }) },
@@ -153,7 +153,7 @@ myimgbat = uzful.util.listen.vicious("text", function (val)
     end )
 vicious.register(myimgbat, vicious.widgets.bat, "$1", 90, "BAT0")
 
-local mynotibat, mycritbat_old_val = nil, nil
+local mynotibat, mycritbat_old_val = nil, 0
 mycritbat = uzful.util.threshold(0.2,
     function (val)
         mycritbat_old_val = val
@@ -556,8 +556,14 @@ client.connect_signal("manage", function (c, startup)
     end
 end)
 
-client.connect_signal("focus",   function(c) c.border_color = beautiful.border_focus  end)
-client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+client.connect_signal("focus",   function(c)
+    c.border_color = beautiful.border_focus
+    --c.opacity = 1
+end)
+client.connect_signal("unfocus", function(c)
+    c.border_color = beautiful.border_normal
+    --c.opacity = 0.5
+end)
 
 require("autostart")
 
