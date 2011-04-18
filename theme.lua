@@ -6,7 +6,7 @@ local awful = require("awful")
 
 theme = {}
 
-theme.font          = "sans 8"
+theme.font          = "uni 05_53 6"
 
 theme.bg_normal     = "#000000"
 theme.bg_focus      = "#222222"

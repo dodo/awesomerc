@@ -96,15 +96,19 @@ mymainmenu = awful.menu({ max = 100,
     { "open terminal", terminal, freedesktop.utils.lookup_icon({ icon = 'terminal' }) },
                         })
 
+naughty.config.presets.low.font = "uni 05_53 6"
+naughty.config.presets.normal.font = "uni 05_53 6"
+naughty.config.presets.critical.font = "uni 05_53 6"
+
 -- mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
 --                                      menu = mymainmenu })
 -- }}}
 
 -- {{{ Wibox
 -- Create a textclock widget
-mytextclock = awful.widget.textclock('<span size="x-small"> %H:%M </span>')
-mycal = uzful.widget.calendar({
-    all = '<span size="small">$1</span>',
+mytextclock = awful.widget.textclock(' %H:%M ')
+mytextclock:set_font("sans 5")
+mycal = uzful.widget.calendar({ font = 6,
     head = '<span color="#666666">$1</span>',
     week = '<span color="#999999">$1</span>',
     day  = '<span color="#BBBBBB">$1</span>',
@@ -176,18 +180,20 @@ vicious.register(mycritbat, vicious.widgets.bat, "$2", 90, "BAT0")
 
 -- Battery Text
 mybtxt = wibox.widget.textbox()
+mybtxt:set_font("ProggyTinyTT 12")
 vicious.register(mybtxt, vicious.widgets.bat,
-    '<span size="small">$1$3 $2%</span>', 60, "BAT0")
+    '$1$3 $2%', 60, "BAT0")
 
 -- Temperature Text
 mytemp = wibox.widget.textbox()
+mytemp:set_font("sans 6")
 mycrittemp = uzful.util.threshold(0.8,
     function (val)
-        mytemp:set_markup('<span color="red" size="small">' ..
+        mytemp:set_markup('<span color="red">' ..
             (val*100) .. '°</span>')
     end,
     function (val)
-        mytemp:set_markup('<span color="#666666" size="x-small">' ..
+        mytemp:set_markup('<span color="#666666" size="small">' ..
             (val*100) .. '°</span>')
     end)
 vicious.register(mycrittemp, vicious.widgets.thermal, "$1", 30, "thermal_zone0")
@@ -196,8 +202,8 @@ vicious.register(mycrittemp, vicious.widgets.thermal, "$1", 30, "thermal_zone0")
 
 mynetgraphs = uzful.widget.netgraphs({ default = "wlan0",
     up_fgcolor = "#D00003", down_fgcolor = "#95D043",
-    highlight = ' <span size="x-small"><b>$1</b></span>',
-    normal    = ' <span color="#666666" size="x-small">$1</span>',
+    highlight = ' <b>$1</b>',
+    normal    = ' <span color="#666666">$1</span>',
     big = { width = 161, height = 42, interval = 2, scale = "kb" },
     small = { width = 23, height = theme.menu_height, interval = 2 } })
 
@@ -211,10 +217,10 @@ end
 
 mycpugraphs = uzful.widget.cpugraphs({
     fgcolor = "#D0752A", bgcolor = theme.bg_normal,
-    load = { interval = 20,
-        text = ' <span size="x-small"><span color="#666666">$1</span>' ..
+    load = { interval = 20, font = "ProggyTinyTT 10",
+        text = ' <span color="#666666">$1</span>' ..
                '  <span color="#9A9A9A">$2</span>' ..
-               '  <span color="#DDDDDD">$3</span></span>' },
+               '  <span color="#DDDDDD">$3</span>' },
     big = { width = 161, height = 42, interval = 1 },
     small = { width = 42, height = theme.menu_height, interval = 1 } })
 
