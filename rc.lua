@@ -261,7 +261,7 @@ mytasklist.buttons = awful.util.table.join(
                                                   instance:hide()
                                                   instance = nil
                                               else
-                                                  instance = awful.menu.clients({ width=250 })
+                                                  instance = awful.menu.clients(nil,{theme={width=250}})
                                               end
                                           end),
                      awful.button({ }, 4, function ()
