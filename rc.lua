@@ -61,10 +61,11 @@ layouts =
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
 tags = {}
-names = {"☼", "✪", "⌥", "✇", "⌤", "⍜", "⌬", "♾", "⌘" }
+tags_numbered = false
+tag_names = {"☼", "✪", "⌥", "✇", "⌤", "⍜", "⌬", "♾", "⌘" }
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag(names, s, layouts[10])
+    tags[s] = awful.tag(tag_names, s, layouts[10])
 end
 -- }}}
 
@@ -77,8 +78,21 @@ local menu_graph_text = function ()
     return (detailed_graphs.visible() and "disable" or "enable") .. " graphs"
 end
 
+local menu_tags_text = function ()
+    return (tags_numbered and "symbol" or "number") .. " tags"
+end
+
 myfreedesktopmenu = freedesktop.menu.new()
 myawesomemenu = {
+   { menu_tags_text(), function (m)
+        tags_numbered = not tags_numbered
+        for s = 1, screen.count() do
+            for i, t in ipairs(tags[s]) do
+                t.name = tags_numbered and tostring(i) or tag_names[i]
+            end
+        end
+        m.label:set_text(menu_tags_text())
+     end },
    { menu_graph_text(), function (m)
         detailed_graphs.toggle()
         m.label:set_text(menu_graph_text())
