@@ -7,3 +7,6 @@
 [submodule "uzful"]
 	path = uzful
 	url = git://github.com/dodo/uzful.git
+[submodule "vicious"]
+	path = vicious
+	url = http://git.sysphere.org/vicious
