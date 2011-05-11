@@ -423,6 +423,15 @@ globalkeys = awful.util.table.join(
         end),
     awful.key({ modkey,           }, "w", function () mymainmenu:toggle() end),
     awful.key({ modkey, "Shift"   }, "w", function () mymainmenu:toggle({keygrabber=true}) end),
+    awful.key({ modkey, "Shift"   }, "a", function ()
+            if instance then
+                instance:hide()
+                instance = nil
+            else
+                instance = awful.menu.clients(nil,
+                    { keygrabber = true, theme = { width = 250 } } )
+            end
+        end),
 
     -- Layout manipulation
     awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
