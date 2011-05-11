@@ -82,7 +82,7 @@ theme.titlebar_maximized_button_normal_active = dir .. "titlebar/maximized_norma
 theme.titlebar_maximized_button_focus_active  = dir .. "titlebar/maximized_focus_active.png"
 
 -- You can use your own command to set your wallpaper
-theme.wallpaper_cmd = { "awsetbg " .. dir .. "../../../Pictures/workshop_1280x800.jpg" }
+theme.wallpaper_cmd = { "awsetbg " .. dir .. "../../../Pictures/into_the_woods_1280x800.jpg" }
 
 -- You can use your own layout icons like this:
 theme.layout_fairh = dir .. "layouts/fairh.png"
