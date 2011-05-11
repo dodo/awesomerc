@@ -399,10 +399,14 @@ root.buttons(awful.util.table.join(
 -- }}}
 
 volume = uzful.util.volume("Master")
+lock = function ()
+    awful.util.spawn_with_shell("xtrlock")
+end
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
-    awful.key({}, "XF86Launch1", function () awful.util.spawn_with_shell("xtrlock") end),
+    awful.key({}, "XF86Launch1",     lock),
+    awful.key({}, "XF86ScreenSaver", lock),
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
