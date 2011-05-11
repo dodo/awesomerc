@@ -4,3 +4,6 @@
 [submodule "obvious"]
 	path = obvious
 	url = git://git.mercenariesguild.net/obvious.git
+[submodule "uzful"]
+	path = uzful
+	url = git://github.com/dodo/uzful.git
