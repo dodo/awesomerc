@@ -74,6 +74,10 @@ end
 
 detailed_graphs = uzful.menu.toggle_widgets()
 
+taglist_filter = uzful.util.functionlist({
+    awful.widget.taglist.filter.noempty,
+    awful.widget.taglist.filter.all })
+
 local menu_graph_text = function ()
     return (detailed_graphs.visible() and "disable" or "enable") .. " graphs"
 end
@@ -82,9 +86,25 @@ local menu_tags_text = function ()
     return (tags_numbered and "symbol" or "number") .. " tags"
 end
 
+local menu_taglist_text = function ()
+    if taglist_filter.current() == 1 then
+        return "show all tags"
+    elseif taglist_filter.current() == 2 then
+        return "hide empty tags"
+    else
+        return "nil"
+    end
+end
 
 myfreedesktopmenu = freedesktop.menu.new()
 myawesomemenu = {
+   { menu_taglist_text(), function (m)
+        taglist_filter.next()
+        m.label:set_text(menu_taglist_text())
+        for s = 1, screen.count() do
+            tags[s][1].name = tags[s][1].name
+        end
+   end },
    { menu_tags_text(), function (m)
         tags_numbered = not tags_numbered
         for s = 1, screen.count() do
@@ -301,7 +321,7 @@ for s = 1, screen.count() do
                            awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
                            awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
     -- Create a taglist widget
-    mytaglist[s] = awful.widget.taglist(s, awful.widget.taglist.filter.noempty, mytaglist.buttons)
+    mytaglist[s] = awful.widget.taglist(s, taglist_filter.call, mytaglist.buttons)
 
     -- Create a tasklist widget
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
