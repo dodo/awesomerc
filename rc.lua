@@ -62,7 +62,7 @@ layouts =
 -- Define a tag table which hold all screen tags.
 tags = {}
 tags_numbered = false
-tag_names = {"☼", "✪", "⌥", "✇", "⌤", "⍜", "⌬", "♾", "⌘", "⚗", "Ω", "·" }
+tag_names = {"☼", "✪", "⌥", "✇", "⌤", "⍜", "⌬", "♾", "⌘", "⚗", "Ω", "·"}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
     tags[s] = awful.tag(tag_names, s, layouts[10])
@@ -529,7 +529,7 @@ for i = 1, keynumber do
         awful.key({ modkey }, "#" .. i + 9,
                   function ()
                         local screen = mouse.screen
-                        if awful.tag.selected(scree) == tags[screen][i] then
+                        if tags[screen][i].selected then
                             return awful.tag.history.restore()
                         end
                         if tags[screen][i] then
