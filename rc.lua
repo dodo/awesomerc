@@ -62,7 +62,7 @@ layouts =
 -- Define a tag table which hold all screen tags.
 tags = {}
 tags_numbered = false
-tag_names = {"☼", "✪", "⌥", "✇", "⌤", "⍜", "⌬", "♾", "⌘" }
+tag_names = {"☼", "✪", "⌥", "✇", "⌤", "⍜", "⌬", "♾", "⌘", "⚗", "Ω", "·" }
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
     tags[s] = awful.tag(tag_names, s, layouts[10])
@@ -81,6 +81,7 @@ end
 local menu_tags_text = function ()
     return (tags_numbered and "symbol" or "number") .. " tags"
 end
+
 
 myfreedesktopmenu = freedesktop.menu.new()
 myawesomemenu = {
@@ -497,7 +498,7 @@ clientkeys = awful.util.table.join(
 -- Compute the maximum number of digit we need, limited to 9
 keynumber = 0
 for s = 1, screen.count() do
-   keynumber = math.min(9, math.max(#tags[s], keynumber));
+   keynumber = math.min(20, math.max(#tags[s], keynumber));
 end
 
 -- Bind all key numbers to tags.
@@ -508,6 +509,9 @@ for i = 1, keynumber do
         awful.key({ modkey }, "#" .. i + 9,
                   function ()
                         local screen = mouse.screen
+                        if awful.tag.selected(scree) == tags[screen][i] then
+                            return awful.tag.history.restore()
+                        end
                         if tags[screen][i] then
                             awful.tag.viewonly(tags[screen][i])
                         end
