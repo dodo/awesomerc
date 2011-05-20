@@ -238,7 +238,7 @@ uzful.widget.set_properties(mytempgraph, {
     border_color = nil,
     color = "#AA0000",
     background_color = theme.bg_normal })
-vicious.register(mytempgraph, vicious.widgets.cpu, "$1", 30, "thermal_zone0")
+vicious.register(mytempgraph, vicious.widgets.thermal, "$1", 30, "thermal_zone0")
 
 -- net usage graphs
 
