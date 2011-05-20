@@ -219,7 +219,7 @@ mybtxt:set_font("ProggyTinyTT 12")
 vicious.register(mybtxt, vicious.widgets.bat,
     '$1$3 $2%', 60, "BAT0")
 
--- Temperature Text
+-- Temperature Info
 mytemp = wibox.widget.textbox()
 mytemp:set_font("sans 6")
 mycrittemp = uzful.util.threshold(0.8,
@@ -232,6 +232,13 @@ mycrittemp = uzful.util.threshold(0.8,
             (val*100) .. '°</span>')
     end)
 vicious.register(mycrittemp, vicious.widgets.thermal, "$1", 30, "thermal_zone0")
+
+mytempgraph = awful.widget.graph(big_geometry)
+uzful.widget.set_properties(mytempgraph, {
+    border_color = nil,
+    color = "#AA0000",
+    background_color = theme.bg_normal })
+vicious.register(mytempgraph, vicious.widgets.cpu, "$1", 30, "thermal_zone0")
 
 -- net usage graphs
 
@@ -270,7 +277,7 @@ mylayoutmenu = uzful.menu.layouts(layouts)
 -- Create a wibox for each screen and add it
 mywibox = {}
 mynotification = {}
-myinfobox = { net = {}, cpu = {}, cal = {}, bat = {} }
+myinfobox = { net = {}, cpu = {}, cal = {}, bat = {}, temp = {} }
 mypromptbox = {}
 mylayoutbox = {}
 mytaglist = {}
@@ -343,6 +350,10 @@ for s = 1, screen.count() do
             widget = mycpugraphs.big.layout,
             height = mycpugraphs.big.height,
             width = mycpugraphs.big.width })
+    myinfobox.temp[s] = uzful.widget.infobox({ screen = s,
+            position = "top", align = "right",
+            widget = mytempgraph,
+            width = 161, height = 42 })
     myinfobox.cal[s] = uzful.widget.infobox({ screen = s,
             size = function () return mycal.width,mycal.height end,
             position = "top", align = "right",
@@ -392,6 +403,12 @@ for s = 1, screen.count() do
         end
     end)
 
+    mytemp:connect_signal("mouse::enter", function ()
+        if detailed_graphs.visible() then
+            myinfobox.temp[s]:show()
+        end
+    end)
+
     mytextclock:connect_signal("mouse::enter", function ()
         mycal:update()
         myinfobox.cal[s]:update()
@@ -406,6 +423,7 @@ for s = 1, screen.count() do
     mynetgraphs.small.layout:connect_signal("mouse::leave", myinfobox.net[s].hide)
     mycpugraphs.small.widget:connect_signal("mouse::leave", myinfobox.cpu[s].hide)
     mytextclock:connect_signal("mouse::leave", myinfobox.cal[s].hide)
+    mytemp:connect_signal("mouse::leave", myinfobox.temp[s].hide)
     mybat:connect_signal("mouse::leave", myinfobox.bat[s].hide)
 
 end

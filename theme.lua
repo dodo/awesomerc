@@ -48,7 +48,7 @@ theme.memory  = dir .. "memory.png"
 -- Variables set for theming the menu:
 -- menu_[bg|fg]_[normal|focus]
 -- menu_[border_color|border_width]
-theme.menu_submenu_icon = dir .. "submenu.png"
+theme.menu_submenu = "> "
 theme.menu_height = 14
 theme.menu_width  = 100
 
