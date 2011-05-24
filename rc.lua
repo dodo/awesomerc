@@ -233,12 +233,13 @@ mycrittemp = uzful.util.threshold(0.8,
     end)
 vicious.register(mycrittemp, vicious.widgets.thermal, "$1", 30, "thermal_zone0")
 
-mytempgraph = awful.widget.graph(big_geometry)
+
+mytempgraph = awful.widget.graph({ width = 161, height = 42 })
 uzful.widget.set_properties(mytempgraph, {
     border_color = nil,
     color = "#AA0000",
     background_color = theme.bg_normal })
-vicious.register(mytempgraph, vicious.widgets.thermal, "$1", 30, "thermal_zone0")
+vicious.register(mytempgraph, vicious.widgets.thermal, "$1", 4, "thermal_zone0")
 
 -- net usage graphs
 
@@ -351,9 +352,9 @@ for s = 1, screen.count() do
             height = mycpugraphs.big.height,
             width = mycpugraphs.big.width })
     myinfobox.temp[s] = uzful.widget.infobox({ screen = s,
+            size = function () return mytempgraph:fit(-1, -1) end,
             position = "top", align = "right",
-            widget = mytempgraph,
-            width = 161, height = 42 })
+            widget = mytempgraph })
     myinfobox.cal[s] = uzful.widget.infobox({ screen = s,
             size = function () return mycal.width,mycal.height end,
             position = "top", align = "right",
