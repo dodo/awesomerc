@@ -442,11 +442,15 @@ volume = uzful.util.volume("Master")
 lock = function ()
     awful.util.spawn_with_shell("xtrlock")
 end
+invert_screen = function ()
+    awful.util.spawn_with_shell("xcalib -invert -alter")
+end
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
     awful.key({}, "XF86Launch1",     lock),
     awful.key({}, "XF86ScreenSaver", lock),
+    awful.key({}, "#149",            invert_screen),
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
