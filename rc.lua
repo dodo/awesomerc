@@ -50,6 +50,8 @@ layouts =
     awful.layout.suit.tile.top,
     awful.layout.suit.fair,
     awful.layout.suit.fair.horizontal,
+    uzful.layout.suit.strips.rows,
+    uzful.layout.suit.strips.columns,
     awful.layout.suit.spiral,
     awful.layout.suit.spiral.dwindle,
     awful.layout.suit.max,
@@ -65,7 +67,7 @@ tags_numbered = false
 tag_names = {"☼", "✪", "⌥", "✇", "⌤", "⍜", "⌬", "♾", "⌘", "⚗", "Ω", "·"}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag(tag_names, s, layouts[10])
+    tags[s] = awful.tag(tag_names, s, layouts[12])
 end
 -- }}}
 

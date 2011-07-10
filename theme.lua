@@ -85,8 +85,10 @@ theme.titlebar_maximized_button_focus_active  = dir .. "titlebar/maximized_focus
 theme.wallpaper_cmd = { "awsetbg " .. dir .. "../../../Pictures/into_the_woods_1280x800.jpg" }
 
 -- You can use your own layout icons like this:
+theme.layout_rows = dir .. "layouts/rows.png"
 theme.layout_fairh = dir .. "layouts/fairh.png"
 theme.layout_fairv = dir .. "layouts/fairv.png"
+theme.layout_columns = dir .. "layouts/columns.png"
 theme.layout_floating  = dir .. "layouts/floating.png"
 theme.layout_magnifier = dir .. "layouts/magnifier.png"
 theme.layout_max = dir .. "layouts/max.png"
