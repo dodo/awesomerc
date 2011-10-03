@@ -214,6 +214,11 @@ mycritbat = uzful.util.threshold(0.2,
     end)
 vicious.register(mycritbat, vicious.widgets.bat, "$2", 90, "BAT0")
 
+-- Memory Text
+mymtxt = wibox.widget.textbox()
+mymtxt:set_font("ProggyTinyTT 12")
+vicious.register(mymtxt, vicious.widgets.mem,
+    '$4mb free, $1%', 60)
 
 -- Battery Text
 mybtxt = wibox.widget.textbox()
@@ -280,7 +285,7 @@ mylayoutmenu = uzful.menu.layouts(layouts)
 -- Create a wibox for each screen and add it
 mywibox = {}
 mynotification = {}
-myinfobox = { net = {}, cpu = {}, cal = {}, bat = {}, temp = {} }
+myinfobox = { net = {}, cpu = {}, cal = {}, bat = {}, mem = {}, temp = {} }
 mypromptbox = {}
 mylayoutbox = {}
 mytaglist = {}
@@ -365,6 +370,10 @@ for s = 1, screen.count() do
             size = function () return mybtxt:fit(-1, -1) end,
             position = "top", align = "right",
             widget = mybtxt })
+    myinfobox.mem[s] = uzful.widget.infobox({ screen = s,
+            size = function () return mymtxt:fit(-1, -1) end,
+            position = "top", align = "right",
+            widget = mymtxt })
 
     local layout = uzful.layout.build({
         layout = wibox.layout.align.horizontal,
@@ -423,11 +432,17 @@ for s = 1, screen.count() do
         myinfobox.bat[s]:show()
     end)
 
+    mymem:connect_signal("mouse::enter", function ()
+        myinfobox.mem[s]:update()
+        myinfobox.mem[s]:show()
+    end)
+
     mynetgraphs.small.layout:connect_signal("mouse::leave", myinfobox.net[s].hide)
     mycpugraphs.small.widget:connect_signal("mouse::leave", myinfobox.cpu[s].hide)
     mytextclock:connect_signal("mouse::leave", myinfobox.cal[s].hide)
     mytemp:connect_signal("mouse::leave", myinfobox.temp[s].hide)
     mybat:connect_signal("mouse::leave", myinfobox.bat[s].hide)
+    mymem:connect_signal("mouse::leave", myinfobox.mem[s].hide)
 
 end
 -- }}}
