@@ -145,7 +145,7 @@ naughty.config.presets.critical.font = "uni 05_53 6"
 -- Create a textclock widget
 mytextclock = awful.widget.textclock(' %H:%M ')
 mytextclock:set_font("sans 5")
-mycal = uzful.widget.calendar({ font = 6,
+mycal = uzful.widget.calendar({ font = 7,
     head = '<span color="#666666">$1</span>',
     week = '<span color="#999999">$1</span>',
     day  = '<span color="#BBBBBB">$1</span>',
@@ -442,10 +442,10 @@ root.buttons(awful.util.table.join(
 
 volume = uzful.util.volume("Master")
 lock = function ()
-    awful.util.spawn_with_shell("xtrlock")
+    awful.util.spawn("xtrlock")
 end
 invert_screen = function ()
-    awful.util.spawn_with_shell("xcalib -invert -alter")
+    awful.util.spawn("xcalib -invert -alter")
 end
 
 -- {{{ Key bindings
