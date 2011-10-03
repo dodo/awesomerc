@@ -74,11 +74,16 @@ end
 -- {{{ Menu
 -- Create a laucher widget and a main menu
 
+big_wallpaper = false
 detailed_graphs = uzful.menu.toggle_widgets()
 
 taglist_filter = uzful.util.functionlist({
     awful.widget.taglist.filter.noempty,
     awful.widget.taglist.filter.all })
+
+local menu_wallpaper_text = function ()
+    return (big_wallpaper and "hide" or "show") .. " wall art"
+end
 
 local menu_graph_text = function ()
     return (detailed_graphs.visible() and "disable" or "enable") .. " graphs"
@@ -100,6 +105,11 @@ end
 
 myfreedesktopmenu = freedesktop.menu.new()
 myawesomemenu = {
+   { menu_wallpaper_text(), function (m)
+        big_wallpaper = not big_wallpaper
+        m.label:set_text(menu_wallpaper_text())
+        awful.util.spawn(theme.wallpaper[big_wallpaper and "big" or "small"])
+   end },
    { menu_taglist_text(), function (m)
         taglist_filter.next()
         m.label:set_text(menu_taglist_text())
