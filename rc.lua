@@ -290,7 +290,7 @@ for _, widget in ipairs(mycpugraphs.big.widgets) do
 end
 
 
-mylayoutmenu = uzful.menu.layouts(layouts)
+mylayoutmenu = uzful.menu.layouts(layouts, { align = "right", width = 60 })
 
 -- Create a wibox for each screen and add it
 mywibox = {}
