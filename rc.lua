@@ -650,6 +650,11 @@ client.connect_signal("manage", function (c, startup)
         end
     end)
 
+    local bar = uzful.widget.titlebar(c)
+    bar.widget:buttons(awful.util.table.join(
+        awful.button({ }, 1, function () awful.mouse.client.move(c)   end),
+        awful.button({ }, 3, function () awful.mouse.client.resize(c) end)))
+
     if not startup then
         -- Set the windows at the slave,
         -- i.e. put it at the end of others instead of setting it master.
