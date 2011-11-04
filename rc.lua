@@ -4,6 +4,7 @@ require("awful.autofocus")
 require("awful.rules")
 -- Widget and layout library
 require("wibox")
+require("wibox.widget.textbox")
 -- Theme handling library
 require("beautiful")
 -- Notification library
@@ -36,7 +37,6 @@ end
 
 -- Widget library
 require("vicious")
-require("wibox.widget.textbox")
 -- Load Debian menu entries
 require("debian.menu")
 -- Load freedesktop menu
