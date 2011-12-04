@@ -575,6 +575,7 @@ globalkeys = awful.util.table.join(
 )
 
 clientkeys = awful.util.table.join(
+    awful.key({ modkey, "Control", "Shift" },  "space", uzful.widget.titlebar.mirror            ),
     awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
     awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
     awful.key({ modkey,           }, "q",      function (c) c:kill()                         end),
@@ -654,8 +655,10 @@ awful.rules.rules = {
                      buttons = clientbuttons } },
     { rule = { class = "MPlayer" },
       properties = { floating = true } },
+    { rule = { class = "lastfm" },
+      properties = { floating = true } },
     { rule = { class = "feh" },
-      properties = { floating = true, maximized_vertical = true, maximized_horizontal = true } },
+      properties = { floating = true } },
     { rule = { class = "pinentry" },
       properties = { floating = true } },
     { rule = { class = "gimp" },
