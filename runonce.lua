@@ -1,6 +1,8 @@
 -- @author Peter J. Kranz (Absurd-Mind, peter@myref.net)
 -- Any questions, criticism or praise just drop me an email
 
+require('uzful/util')
+
 local M = {}
 
 -- get the current Pid of awesome
@@ -53,7 +55,12 @@ local function shallExecute(oldPid, newPid)
 end
 
 local function getPidFile()
-    local host = io.lines("/proc/sys/kernel/hostname")()
+    local host =  uzful.util.proglines("/proc/sys/kernel/hostname")()
+    if host == nil then
+       local fhost = io.popen("hostname")
+       host = fhost:read()
+       fhost:close()
+    end
     return awful.util.getdir("cache") .. "/awesome." .. host .. ".pid"
 end
 
