@@ -10,3 +10,6 @@
 [submodule "vicious"]
 	path = vicious
 	url = http://git.sysphere.org/vicious
+[submodule "menubar"]
+	path = menubar
+	url = git://github.com/alexander-yakushev/menubar.git
