@@ -525,8 +525,17 @@ globalkeys = awful.util.table.join(
             awful.client.focus.byidx(-1)
             if client.focus then client.focus:raise() end
         end),
-    awful.key({ modkey,           }, "w", function () mymainmenu:toggle() end),
-    awful.key({ modkey, "Shift"   }, "w", function () mymainmenu:toggle({keygrabber=true}) end),
+--     awful.key({ modkey,           }, "w", function () mymainmenu:toggle() end),
+--     awful.key({ modkey, "Shift"   }, "w", function ()
+    awful.key({ modkey,           }, "w", function ()
+            local g = screen[mouse.screen].geometry
+            mymainmenu:toggle({
+                coords = {
+                    x = g.x + math.floor(g.width  * 0.5) - 8,
+                    y = g.y + math.floor(g.height * 0.5) - 8
+                },
+                keygrabber = true })
+        end),
     awful.key({ modkey, "Shift"   }, "a", function ()
             if instance then
                 instance:hide()
