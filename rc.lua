@@ -59,6 +59,13 @@ editor_cmd = terminal .. " -e " .. editor
 freedesktop.utils.terminal = terminal
 freedesktop.utils.icon_theme = 'default.kde4'
 
+
+require("menubar")
+menubar.cache_entries = true
+menubar.show_categories = true   -- Change to false if you want only programs to appear in the menu
+menubar.set_icon_theme("default.kde4")
+menubar.g.height = 12
+
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
 -- If you do not like this or do not have such a key,
@@ -563,7 +570,8 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end),
 
     -- Prompt
-    awful.key({ modkey },            "r",     function () mypromptbox[mouse.screen]:run() end),
+    awful.key({ modkey,           }, "r",     function () mypromptbox[mouse.screen]:run() end),
+    awful.key({ modkey, "Shift"   }, "r",     function () menubar.show() end),
 
     awful.key({ modkey }, "x",
               function ()
