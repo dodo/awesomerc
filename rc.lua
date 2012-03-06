@@ -505,12 +505,16 @@ end
 invert_screen = function ()
     awful.util.spawn("xcalib -invert -alter")
 end
+screenshot = function ()
+    awful.util.spawn("ksnapshot")
+end
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
     awful.key({}, "XF86Launch1",     lock),
     awful.key({}, "XF86ScreenSaver", lock),
     awful.key({}, "#149",            invert_screen),
+    awful.key({ modkey,           }, "Print",  screenshot               ),
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
