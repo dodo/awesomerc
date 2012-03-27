@@ -44,6 +44,7 @@ require('freedesktop.utils')
 require('freedesktop.menu')
 -- utils Library
 require("uzful")
+require("uzful.restore")
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
@@ -102,6 +103,8 @@ for s = 1, screen.count() do
     -- Each screen has its own tag table.
     tags[s] = awful.tag(tag_names, s, layouts[12])
 end
+
+myrestorelist = uzful.restore(layouts)
 -- }}}
 
 -- {{{ Menu
@@ -417,6 +420,22 @@ for s = 1, screen.count() do
             size = function () return mymtxt:fit(-1, -1) end,
             position = "top", align = "right",
             widget = mymtxt })
+
+    if myrestorelist[s].length > 0 then
+        myrestorelist[s].widget = uzful.widget.infobox({ screen = s,
+                size = function () return myrestorelist[s].fit() end,
+                position = "top", align = "left",
+                visible = true, ontop = false,
+                widget = myrestorelist[s].layout })
+        myrestorelist[s].layout:connect_signal("widget::updated", function ()
+            if myrestorelist[s].length == 0 then
+                    myrestorelist[s].widget:hide()
+                    myrestorelist[s].widget.screen = nil
+            else
+                myrestorelist[s].widget:update()
+            end
+        end)
+    end
 
     local layout = uzful.layout.build({
         layout = wibox.layout.align.horizontal,
