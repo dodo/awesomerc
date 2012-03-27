@@ -505,7 +505,6 @@ for s = 1, screen.count() do
     mytemp:connect_signal("mouse::leave", myinfobox.temp[s].hide)
     mybat:connect_signal("mouse::leave", myinfobox.bat[s].hide)
     mymem:connect_signal("mouse::leave", myinfobox.mem[s].hide)
-
 end
 -- }}}
 
@@ -560,7 +559,7 @@ globalkeys = awful.util.table.join(
                 keygrabber = true })
         end),
     awful.key({ modkey, "Shift"   }, "a", function ()
-            if instance then
+            if instance and instance.wibox.visible then
                 instance:hide()
                 instance = nil
             else
@@ -621,7 +620,8 @@ clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "q",      function (c) c:kill()                         end),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end),
-    awful.key({ modkey,           }, "o",      awful.client.movetoscreen                        ),
+    awful.key({ modkey,           }, "o",      function(c) awful.client.movetoscreen(c,c.screen-1) end ),
+    awful.key({ modkey,           }, "p",      function(c) awful.client.movetoscreen(c,c.screen+1) end ),
     awful.key({ modkey,           }, "t",      function (c) c.ontop = not c.ontop            end),
     awful.key({ modkey,           }, "s",      function (c) c.sticky = not c.sticky          end),
     awful.key({ modkey,           }, "n",      function (c) c.minimized = not c.minimized    end),
