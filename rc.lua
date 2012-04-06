@@ -326,12 +326,90 @@ for _, widget in ipairs(mycpugraphs.big.widgets) do
 end
 
 
+
+-- infoboxes funs
+
+myinfobox = { net = {}, cpu = {}, cal = {}, bat = {}, mem = {}, temp = {} }
+
+myinfobox.net = uzful.widget.infobox({
+        position = "top", align = "right",
+        widget = mynetgraphs.big.layout,
+        height = mynetgraphs.big.height,
+        width = mynetgraphs.big.width })
+myinfobox.cpu = uzful.widget.infobox({
+        position = "top", align = "right",
+        widget = mycpugraphs.big.layout,
+        height = mycpugraphs.big.height,
+        width = mycpugraphs.big.width })
+myinfobox.temp = uzful.widget.infobox({
+        size = function () return mytempgraph:fit(-1, -1) end,
+        position = "top", align = "right",
+        widget = mytempgraph })
+myinfobox.cal = uzful.widget.infobox({
+        size = function () return mycal.width,mycal.height end,
+        position = "top", align = "right",
+        widget = mycal.widget })
+myinfobox.bat = uzful.widget.infobox({
+        size = function () return mybtxt:fit(-1, -1) end,
+        position = "top", align = "right",
+        widget = mybtxt })
+myinfobox.mem = uzful.widget.infobox({
+        size = function () return mymtxt:fit(-1, -1) end,
+        position = "top", align = "right",
+        widget = mymtxt })
+
+mynetgraphs.small.layout:connect_signal("mouse::enter", function ()
+    if detailed_graphs.visible() then
+        myinfobox.net:update()
+        myinfobox.net:show()
+    end
+end)
+
+mycpugraphs.small.widget:connect_signal("mouse::enter", function ()
+    if detailed_graphs.visible() then
+        myinfobox.cpu:update()
+        myinfobox.cpu:show()
+    end
+end)
+
+mytemp:connect_signal("mouse::enter", function ()
+    if detailed_graphs.visible() then
+        myinfobox.temp:update()
+        myinfobox.temp:show()
+    end
+end)
+
+mytextclock:connect_signal("mouse::enter", function ()
+    mycal:update()
+    myinfobox.cal:update()
+    myinfobox.cal:show()
+end)
+
+mybat:connect_signal("mouse::enter", function ()
+    myinfobox.bat:update()
+    myinfobox.bat:show()
+end)
+
+mymem:connect_signal("mouse::enter", function ()
+    myinfobox.mem:update()
+    myinfobox.mem:show()
+end)
+
+mynetgraphs.small.layout:connect_signal("mouse::leave", myinfobox.net.hide)
+mycpugraphs.small.widget:connect_signal("mouse::leave", myinfobox.cpu.hide)
+mytextclock:connect_signal("mouse::leave", myinfobox.cal.hide)
+mytemp:connect_signal("mouse::leave", myinfobox.temp.hide)
+mybat:connect_signal("mouse::leave", myinfobox.bat.hide)
+mymem:connect_signal("mouse::leave", myinfobox.mem.hide)
+
+
+
+
 mylayoutmenu = uzful.menu.layouts(layouts, { align = "right", width = 60 })
 
 -- Create a wibox for each screen and add it
 mywibox = {}
 mynotification = {}
-myinfobox = { net = {}, cpu = {}, cal = {}, bat = {}, mem = {}, temp = {} }
 mypromptbox = {}
 mylayoutbox = {}
 mytaglist = {}
@@ -394,32 +472,7 @@ for s = 1, screen.count() do
 
     -- Create the wibox
     mywibox[s] = awful.wibox({ position = "top", screen = s, height = theme.menu_height })
-    myinfobox.net[s] = uzful.widget.infobox({ screen = s,
-            position = "top", align = "right",
-            widget = mynetgraphs.big.layout,
-            height = mynetgraphs.big.height,
-            width = mynetgraphs.big.width })
-    myinfobox.cpu[s] = uzful.widget.infobox({ screen = s,
-            position = "top", align = "right",
-            widget = mycpugraphs.big.layout,
-            height = mycpugraphs.big.height,
-            width = mycpugraphs.big.width })
-    myinfobox.temp[s] = uzful.widget.infobox({ screen = s,
-            size = function () return mytempgraph:fit(-1, -1) end,
-            position = "top", align = "right",
-            widget = mytempgraph })
-    myinfobox.cal[s] = uzful.widget.infobox({ screen = s,
-            size = function () return mycal.width,mycal.height end,
-            position = "top", align = "right",
-            widget = mycal.widget })
-    myinfobox.bat[s] = uzful.widget.infobox({ screen = s,
-            size = function () return mybtxt:fit(-1, -1) end,
-            position = "top", align = "right",
-            widget = mybtxt })
-    myinfobox.mem[s] = uzful.widget.infobox({ screen = s,
-            size = function () return mymtxt:fit(-1, -1) end,
-            position = "top", align = "right",
-            widget = mymtxt })
+
 
     if myrestorelist[s].length > 0 then
         myrestorelist[s].widget = uzful.widget.infobox({ screen = s,
@@ -458,53 +511,11 @@ for s = 1, screen.count() do
 
     mywibox[s]:set_widget(layout)
 
-    -- infoboxes funs
 
     mynotification[s].text:buttons(awful.util.table.join(
         awful.button({ }, 1, function () mynotification[s]:toggle_menu() end),
         awful.button({ }, 3, function () mynotification[s]:toggle() end)
     ))
-
-    mynetgraphs.small.layout:connect_signal("mouse::enter", function ()
-        if detailed_graphs.visible() then
-            myinfobox.net[s]:show()
-        end
-    end)
-
-    mycpugraphs.small.widget:connect_signal("mouse::enter", function ()
-        if detailed_graphs.visible() then
-            myinfobox.cpu[s]:show()
-        end
-    end)
-
-    mytemp:connect_signal("mouse::enter", function ()
-        if detailed_graphs.visible() then
-            myinfobox.temp[s]:show()
-        end
-    end)
-
-    mytextclock:connect_signal("mouse::enter", function ()
-        mycal:update()
-        myinfobox.cal[s]:update()
-        myinfobox.cal[s]:show()
-    end)
-
-    mybat:connect_signal("mouse::enter", function ()
-        myinfobox.bat[s]:update()
-        myinfobox.bat[s]:show()
-    end)
-
-    mymem:connect_signal("mouse::enter", function ()
-        myinfobox.mem[s]:update()
-        myinfobox.mem[s]:show()
-    end)
-
-    mynetgraphs.small.layout:connect_signal("mouse::leave", myinfobox.net[s].hide)
-    mycpugraphs.small.widget:connect_signal("mouse::leave", myinfobox.cpu[s].hide)
-    mytextclock:connect_signal("mouse::leave", myinfobox.cal[s].hide)
-    mytemp:connect_signal("mouse::leave", myinfobox.temp[s].hide)
-    mybat:connect_signal("mouse::leave", myinfobox.bat[s].hide)
-    mymem:connect_signal("mouse::leave", myinfobox.mem[s].hide)
 end
 -- }}}
 
