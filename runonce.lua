@@ -1,7 +1,7 @@
 -- @author Peter J. Kranz (Absurd-Mind, peter@myref.net)
 -- Any questions, criticism or praise just drop me an email
 
-require('uzful/util')
+require('awful.util')
 
 local M = {}
 
@@ -55,7 +55,7 @@ local function shallExecute(oldPid, newPid)
 end
 
 local function getPidFile()
-    local host =  uzful.util.proglines("/proc/sys/kernel/hostname")()
+    local host = awful.util.pread("/proc/sys/kernel/hostname")
     if host == nil then
        local fhost = io.popen("hostname")
        host = fhost:read()

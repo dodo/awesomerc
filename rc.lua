@@ -476,14 +476,14 @@ for s = 1, screen.count() do
 
     if myrestorelist[s].length > 0 then
         myrestorelist[s].widget = uzful.widget.infobox({ screen = s,
-                size = function () return myrestorelist[s].fit() end,
+                size = myrestorelist[s].fit,
                 position = "top", align = "left",
                 visible = true, ontop = false,
                 widget = myrestorelist[s].layout })
         myrestorelist[s].layout:connect_signal("widget::updated", function ()
             if myrestorelist[s].length == 0 then
-                    myrestorelist[s].widget:hide()
-                    myrestorelist[s].widget.screen = nil
+                myrestorelist[s].widget:hide()
+                myrestorelist[s].widget.screen = nil
             else
                 myrestorelist[s].widget:update()
             end
@@ -613,7 +613,7 @@ globalkeys = awful.util.table.join(
 
     -- Prompt
     awful.key({ modkey,           }, "r",     function () mypromptbox[mouse.screen]:run() end),
-    awful.key({ modkey, "Shift"   }, "r",     function () menubar.show() end),
+    awful.key({ modkey, "Shift"   }, "r",     function () menubar.show(mouse.screen) end),
 
     awful.key({ modkey }, "x",
               function ()
