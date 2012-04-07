@@ -647,7 +647,13 @@ clientkeys = awful.util.table.join(
 -- Compute the maximum number of digit we need, limited to 9
 keynumber = 0
 for s = 1, screen.count() do
-   keynumber = math.min(20, math.max(#tags[s], keynumber));
+    keynumber = math.min(20, math.max(#tags[s], keynumber))
+
+    globalkeys = awful.util.table.join(globalkeys,
+        awful.key({ modkey }, "F" .. s,
+            function ()
+                awful.screen.focus(s)
+            end))
 end
 
 -- Bind all key numbers to tags.
