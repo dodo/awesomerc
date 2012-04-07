@@ -62,10 +62,7 @@ freedesktop.utils.icon_theme = 'default.kde4'
 
 
 require("menubar")
-menubar.cache_entries = true
-menubar.show_categories = true   -- Change to false if you want only programs to appear in the menu
-menubar.set_icon_theme("default.kde4")
-menubar.g.height = 12
+menubar.geometry.height = 12
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
