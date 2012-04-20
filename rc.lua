@@ -568,7 +568,7 @@ globalkeys = awful.util.table.join(
                 },
                 keygrabber = true })
         end),
-    awful.key({ modkey, "Shift"   }, "a", function ()
+    awful.key({ modkey,           }, "a", function ()
             if instance and instance.wibox.visible then
                 instance:hide()
                 instance = nil
