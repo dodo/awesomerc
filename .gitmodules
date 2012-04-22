@@ -13,3 +13,6 @@
 [submodule "menubar"]
 	path = menubar
 	url = git://github.com/alexander-yakushev/menubar.git
+[submodule "couth"]
+	path = couth
+	url = git://github.com/gorlowski/couth.git
