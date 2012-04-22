@@ -1,6 +1,6 @@
 local _ = require("runonce")
 
 _.run "nm-applet"
-_.run "kmix"
+-- _.run "kmix"
 
 
