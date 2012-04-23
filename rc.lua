@@ -45,6 +45,26 @@ require('freedesktop.menu')
 -- utils Library
 require("uzful")
 require("uzful.restore")
+-- keyboard mouse control
+require("rodentbane")
+-- audio control
+require("couth")
+require("couth.lib.alsa")
+couth.CONFIG.NOTIFIER_FONT = "mono 5"
+couth.CONFIG.INDICATOR_BARS = {'','▏','▎','▍','▌','▋','▊','▉','█'}
+couth.CONFIG.ALSA_CONTROLS = {
+    'Master',
+    'PCM',
+}
+couth.indicator.barIndicator = function (prct)
+    local BAR = couth.CONFIG.INDICATOR_BARS
+    local maxBars = couth.CONFIG.INDICATOR_MAX_BARS
+    local num_bars = maxBars * prct * 0.01
+    local full_bars = math.floor(num_bars)
+    local part_bar = math.floor((num_bars - full_bars) * 7) + 1
+    return string.rep(BAR[9], full_bars) .. BAR[part_bar]
+end
+
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
@@ -526,7 +546,6 @@ root.buttons(awful.util.table.join(
 ))
 -- }}}
 
-volume = uzful.util.volume("Master")
 lock = function ()
     awful.util.spawn("xtrlock")
 end
@@ -536,6 +555,19 @@ end
 screenshot = function ()
     awful.util.spawn("ksnapshot")
 end
+
+volume = {
+    master = {
+        lower  = function (x) couth.notifier:notify( couth.alsa:setVolume('Master',(x or 2)..'dB-')) end,
+        raise  = function (x) couth.notifier:notify( couth.alsa:setVolume('Master',(x or 2)..'dB+')) end,
+        toggle = function ()  couth.notifier:notify( couth.alsa:setVolume('Master','toggle'))        end,
+    },
+    pcm = {
+        lower  = function (x) couth.notifier:notify( couth.alsa:setVolume('PCM',(x or 2)..'dB-')) end,
+        raise  = function (x) couth.notifier:notify( couth.alsa:setVolume('PCM',(x or 2)..'dB+')) end,
+        toggle = function ()  couth.notifier:notify( couth.alsa:setVolume('PCM','toggle'))        end,
+    },
+}
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
@@ -593,13 +625,26 @@ globalkeys = awful.util.table.join(
         end),
 
     -- control sound
-    awful.key({ modkey            }, "<",      function () volume.lower() end),
-    awful.key({ modkey, "Shift"   }, "<",      function () volume.raise() end),
+    awful.key({ modkey            }, "<",            volume.master.lower),
+    awful.key({ modkey, "Shift"   }, "<",            volume.master.raise),
+    awful.key({}, "XF86AudioLowerVolume",            volume.master.lower),
+    awful.key({}, "XF86AudioRaiseVolume",            volume.master.raise),
+    awful.key({}, "XF86AudioMute",                   volume.master.toggle),
+    awful.key({ "Control", modkey            }, "<", volume.pcm.lower),
+    awful.key({ "Control", modkey, "Shift"   }, "<", volume.pcm.raise),
+    awful.key({ "Control" }, "XF86AudioLowerVolume", volume.pcm.lower),
+    awful.key({ "Control" }, "XF86AudioRaiseVolume", volume.pcm.raise),
+    awful.key({ "Control" }, "XF86AudioMute",        volume.pcm.toggle),
+    awful.key({ "Shift" }, "XF86AudioLowerVolume", function () volume.master.lower(5) end),
+    awful.key({ "Shift" }, "XF86AudioRaiseVolume", function () volume.master.raise(5) end),
+    awful.key({ "Control", "Shift" }, "XF86AudioLowerVolume", function () volume.pcm.lower(5) end),
+    awful.key({ "Control", "Shift" }, "XF86AudioRaiseVolume", function () volume.pcm.raise(5) end),
 
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
     awful.key({ modkey, "Control" }, "r", awesome.restart),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit),
+
 
     awful.key({ modkey,           }, "l",     function () awful.tag.incmwfact( 0.05)    end),
     awful.key({ modkey,           }, "h",     function () awful.tag.incmwfact(-0.05)    end),
