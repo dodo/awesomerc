@@ -62,7 +62,8 @@ couth.indicator.barIndicator = function (prct)
     local num_bars = maxBars * prct * 0.01
     local full_bars = math.floor(num_bars)
     local part_bar = math.floor((num_bars - full_bars) * 7) + 1
-    return string.rep(BAR[9], full_bars) .. BAR[part_bar]
+    local bar = string.rep(BAR[9], full_bars) .. BAR[part_bar]
+    return bar .. string.rep( " ", maxBars - full_bars - 1)
 end
 
 
