@@ -52,7 +52,6 @@ theme.memory  = dir .. "memory.png"
 theme.menu_submenu = "> "
 theme.menu_height = 14
 theme.menu_width  = 100
-theme.icon_theme = "default.kde4"
 
 -- You can add as many variables as
 -- you wish and access them by using
