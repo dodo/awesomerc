@@ -38,7 +38,7 @@ end
 -- Widget library
 require("vicious")
 -- Load Debian menu entries
---require("debian.menu")
+require("debian.menu")
 -- Load freedesktop menu
 require('freedesktop.utils')
 require('freedesktop.menu')
@@ -196,7 +196,7 @@ myawesomemenu = {
 mymainmenu = awful.menu({ max = 100,
     { "awesome", myawesomemenu, beautiful.awesome_icon },
     { "Menu", myfreedesktopmenu, freedesktop.utils.lookup_icon({ icon = 'kde' }) },
---    { "Debian", debian.menu.Debian_menu.Debian, freedesktop.utils.lookup_icon({ icon = 'debian-logo' }) },
+    { "Debian", debian.menu.Debian_menu.Debian, freedesktop.utils.lookup_icon({ icon = 'debian-logo' }) },
     { "open terminal", terminal, freedesktop.utils.lookup_icon({ icon = 'terminal' }) },
                         })
 
