@@ -119,7 +119,7 @@ layouts =
 -- Define a tag table which hold all screen tags.
 tags = {}
 tags_numbered = false
-tag_names = {"♅", "✪", "⌥", "✇", "⍜", "⌤", "⌬", "⚡", "૯", "⚗", "Ω", "✉"}
+tag_names = {"☼", "✪", "⌥", "✇", "⌤", "⍜", "⌬", "♾", "⌘", "⚗", "Ω", "·"}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
     tags[s] = awful.tag(tag_names, s, layouts[12])
@@ -239,7 +239,7 @@ mymem = uzful.widget.progressimage({
     image = theme.memory, draw_image_first = false })
 uzful.widget.set_properties(mymem.progress, {
     vertical = true, background_color = theme.bg_normal,
-    border_color = nil, color = "#00FFFF" })
+    border_color = nil, color = "#0173FF" })
 --mymem:set_color({ "#001D40", "#535d6c", "#0173FF" })
 vicious.register(mymem.progress, vicious.widgets.mem, "$1", 13)
 

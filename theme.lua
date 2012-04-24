@@ -10,7 +10,7 @@ theme.font          = "uni 05_53 6"
 theme.icon_theme    = "default.kde4"
 
 theme.bg_normal     = "#000000"
-theme.bg_focus      = "#444444"
+theme.bg_focus      = "#222222"
 theme.bg_urgent     = "#ff0000"
 theme.bg_minimize   = "#111111"
 
@@ -19,9 +19,9 @@ theme.fg_focus      = "#ffffff"
 theme.fg_urgent     = "#ffffff"
 theme.fg_minimize   = "#ffffff"
 
-theme.border_width  = 1
+theme.border_width  = 0
 theme.border_normal = "#000000"
-theme.border_focus  = "#444444"
+theme.border_focus  = "#535d6c"
 theme.border_marked = "#91231c"
 
 
@@ -85,7 +85,7 @@ theme.titlebar_maximized_button_focus_active  = dir .. "titlebar/maximized_focus
 -- You can use your own command to set your wallpaper
 theme.wallpaper = {
     small = "awsetbg -c " .. dir .. "icons/awesome16.png",
-    big   ="awsetbg /home/eri/Downloads/typesofmousewallpaper1366x7681.png",
+    big   ="awsetbg /home/dodo/Pictures/into_the_woods_1280x800.jpg",
     }
 theme.wallpaper_cmd = { theme.wallpaper.small }
 --
