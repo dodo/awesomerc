@@ -63,7 +63,7 @@ couth.indicator.barIndicator = function (prct)
     local full_bars = math.floor(num_bars)
     local part_bar = math.floor((num_bars - full_bars) * 7) + 1
     local bar = string.rep(BAR[9], full_bars) .. BAR[part_bar]
-    return bar .. string.rep( " ", maxBars - full_bars - 1)
+    return bar .. string.rep( " ", maxBars - full_bars - (part_bar > 1 and 1 or 0))
 end
 
 
@@ -85,8 +85,7 @@ freedesktop.utils.icon_theme = 'default.kde4'
 require("menubar")
 menubar.cache_entries = true
 menubar.show_categories = true   -- Change to false if you want only programs to appear in the menu
-menubar.set_icon_theme("default.kde4")
-menubar.g.height = 12
+menubar.geometry.height = 14
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
