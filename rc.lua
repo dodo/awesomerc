@@ -321,7 +321,7 @@ vicious.register(mytempgraph, vicious.widgets.thermal, "$1", 4, "thermal_zone0")
 
 mynetgraphs = uzful.widget.netgraphs({ default = "wlan0",
     up_fgcolor = "#D00003", down_fgcolor = "#95D043",
-    highlight = ' <b>$1</b>',
+    highlight = ' <b>$1</b>', direction = "right",
     normal    = ' <span color="#666666">$1</span>',
     big = { width = 161, height = 42, interval = 2, scale = "kb" },
     small = { width = 23, height = theme.menu_height, interval = 2 } })
@@ -329,23 +329,23 @@ mynetgraphs = uzful.widget.netgraphs({ default = "wlan0",
 mynetgraphs.small.layout:connect_signal("button::release", mynetgraphs.switch)
 
 for _, widget in ipairs(mynetgraphs.big.widgets) do
-    table.insert(detailed_graphs.widgets, widgets)
+    table.insert(detailed_graphs.widgets, widget)
 end
 
 -- CPU graphs
 
 mycpugraphs = uzful.widget.cpugraphs({
-    fgcolor = "#D0752A", bgcolor = "#000000",
+    fgcolor = "#D0752A", bgcolor = "#000000", direction = "right",
     load = { interval = 20, font = "ProggyTinyTT 10",
         text = ' <span color="#666666">$1</span>' ..
                '  <span color="#9A9A9A">$2</span>' ..
                '  <span color="#DDDDDD">$3</span>' },
-    big = { width = 161, height = 42, interval = 1 },
+    big = { width = 161, height = 42, interval = 1, direction = "left" },
     small = { width = 42, height = theme.menu_height, interval = 1 } })
 
 table.insert(detailed_graphs.widgets, mycpugraphs.load)
 for _, widget in ipairs(mycpugraphs.big.widgets) do
-    table.insert(detailed_graphs.widgets, widgets)
+    table.insert(detailed_graphs.widgets, widget)
 end
 
 
@@ -367,7 +367,10 @@ myinfobox.cpu = uzful.widget.infobox({
 myinfobox.temp = uzful.widget.infobox({
         size = function () return mytempgraph:fit(-1, -1) end,
         position = "top", align = "right",
-        widget = mytempgraph })
+        widget = uzful.layout.build({
+                widget = mytempgraph,
+                reflection = { vertical = true },
+                layout = wibox.layout.mirror }) })
 myinfobox.cal = uzful.widget.infobox({
         size = function () return mycal.width,mycal.height end,
         position = "top", align = "right",
@@ -388,7 +391,7 @@ mynetgraphs.small.layout:connect_signal("mouse::enter", function ()
     end
 end)
 
-mycpugraphs.small.widget:connect_signal("mouse::enter", function ()
+mycpugraphs.small.layout:connect_signal("mouse::enter", function ()
     if detailed_graphs.visible() then
         myinfobox.cpu:update()
         myinfobox.cpu:show()
@@ -419,7 +422,7 @@ mymem:connect_signal("mouse::enter", function ()
 end)
 
 mynetgraphs.small.layout:connect_signal("mouse::leave", myinfobox.net.hide)
-mycpugraphs.small.widget:connect_signal("mouse::leave", myinfobox.cpu.hide)
+mycpugraphs.small.layout:connect_signal("mouse::leave", myinfobox.cpu.hide)
 mytextclock:connect_signal("mouse::leave", myinfobox.cal.hide)
 mytemp:connect_signal("mouse::leave", myinfobox.temp.hide)
 mybat:connect_signal("mouse::leave", myinfobox.bat.hide)
@@ -524,7 +527,7 @@ for s = 1, screen.count() do
             function () return s == 1 and wibox.widget.systray() or nil end,
             mynotification[s].text,
             mynetgraphs.small.layout,
-            mycpugraphs.small.widget,
+            mycpugraphs.small.layout,
             mytemp,
             mytextclock,
             mybat,
