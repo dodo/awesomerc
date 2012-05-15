@@ -9,7 +9,7 @@ theme = {}
 theme.font          = "uni 05_53 6"
 theme.icon_theme    = "default.kde4"
 
-theme.bg_normal     = "#000000"
+theme.bg_normal     = "#00000000"
 theme.bg_focus      = "#222222"
 theme.bg_urgent     = "#ff0000"
 theme.bg_minimize   = "#111111"
@@ -20,7 +20,7 @@ theme.fg_urgent     = "#ffffff"
 theme.fg_minimize   = "#ffffff"
 
 theme.border_width  = 0
-theme.border_normal = "#000000"
+theme.border_normal = "#C50B0B"--"#000000"
 theme.border_focus  = "#535d6c"
 theme.border_marked = "#91231c"
 

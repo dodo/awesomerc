@@ -199,9 +199,12 @@ mymainmenu = awful.menu({ max = 100,
     { "open terminal", terminal, freedesktop.utils.lookup_icon({ icon = 'terminal' }) },
                         })
 
-naughty.config.presets.low.font = "uni 05_53 6"
-naughty.config.presets.normal.font = "uni 05_53 6"
-naughty.config.presets.critical.font = "uni 05_53 6"
+for name, preset in pairs(naughty.config.presets) do
+    preset.font = "uni 05_53 6"
+    preset.border_width = "0"
+    preset.bg = "#00000066"
+    preset.opacity = 0.77
+end
 
 -- mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
 --                                      menu = mymainmenu })
@@ -237,7 +240,7 @@ mymem = uzful.widget.progressimage({
     x = 2, y = 2, width = 5, height = 10,
     image = theme.memory, draw_image_first = false })
 uzful.widget.set_properties(mymem.progress, {
-    vertical = true, background_color = theme.bg_normal,
+    vertical = true, background_color = "#000000",
     border_color = nil, color = "#0173FF" })
 --mymem:set_color({ "#001D40", "#535d6c", "#0173FF" })
 vicious.register(mymem.progress, vicious.widgets.mem, "$1", 13)
@@ -247,7 +250,7 @@ mybat = uzful.widget.progressimage(
     { x = 3, y = 4, width = 3, height = 7, image = theme.battery })
 uzful.widget.set_properties(mybat.progress, {
     ticks = true, ticks_gap = 1,  ticks_size = 1,
-    vertical = true, background_color = theme.bg_normal,
+    vertical = true, background_color = "#000000",
     border_color = nil, color = "#FFFFFF" })
 vicious.register(mybat.progress, vicious.widgets.bat, "$2", 45, "BAT0")
 
@@ -264,7 +267,7 @@ local mynotibat, mycritbat_old_val = nil, 0
 mycritbat = uzful.util.threshold(0.2,
     function (val)
         mycritbat_old_val = val
-        mybat.progress:set_background_color(theme.bg_normal)
+        mybat.progress:set_background_color("#000000")
         if mynotibat ~= nil then  naughty.destroy(mynotibat)  end
     end,
     function (val)
@@ -311,7 +314,7 @@ mytempgraph = awful.widget.graph({ width = 161, height = 42 })
 uzful.widget.set_properties(mytempgraph, {
     border_color = nil,
     color = "#AA0000",
-    background_color = theme.bg_normal })
+    background_color = "#000000" })
 vicious.register(mytempgraph, vicious.widgets.thermal, "$1", 4, "thermal_zone0")
 
 -- net usage graphs
@@ -332,7 +335,7 @@ end
 -- CPU graphs
 
 mycpugraphs = uzful.widget.cpugraphs({
-    fgcolor = "#D0752A", bgcolor = theme.bg_normal,
+    fgcolor = "#D0752A", bgcolor = "#000000",
     load = { interval = 20, font = "ProggyTinyTT 10",
         text = ' <span color="#666666">$1</span>' ..
                '  <span color="#9A9A9A">$2</span>' ..
@@ -774,6 +777,7 @@ awful.rules.rules = {
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
 client.connect_signal("manage", function (c, startup)
+    c.opacity = 1
     -- Enable sloppy focus
     c:connect_signal("mouse::enter", function(c)
         if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
