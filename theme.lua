@@ -10,7 +10,8 @@ theme.font          = "uni 05_53 6"
 theme.icon_theme    = "default.kde4"
 
 theme.bg_normal     = "#00000000"
-theme.bg_focus      = "#222222"
+theme.bg_systray    = "#00000000"
+theme.bg_focus      = "#353535A3"--"#222222" * 64%
 theme.bg_urgent     = "#ff0000"
 theme.bg_minimize   = "#111111"
 
@@ -84,11 +85,15 @@ theme.titlebar_maximized_button_normal_active = dir .. "titlebar/maximized_norma
 theme.titlebar_maximized_button_focus_active  = dir .. "titlebar/maximized_focus_active.png"
 
 -- You can use your own command to set your wallpaper
-theme.wallpaper = {
-    small = "awsetbg -c " .. dir .. "icons/awesome16.png",
-    big   ="awsetbg /home/dodo/Pictures/into_the_woods_1280x800.jpg",
-    }
-theme.wallpaper_cmd = { theme.wallpaper.small }
+theme.wallpapers = {
+    { dir .. "icons/awesome16.png", center = true},
+    "/home/dodo/Pictures/into_the_woods_1280x800.jpg",
+    "/home/dodo/Pictures/planetoid_3_1280x800.png",
+    "/home/dodo/Pictures/meh.ro7944.png",
+    {"/home/dodo/Pictures/7003_68fd_black.png", center = true},
+}
+-- default
+theme.wallpaper_cmd = { "awsetbg -c " .. theme.wallpapers[1][1] }
 --
 
 -- You can use your own layout icons like this:
