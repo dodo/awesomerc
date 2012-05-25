@@ -11,7 +11,7 @@ theme.icon_theme    = "default.kde4"
 
 theme.bg_normal     = "#00000000"
 theme.bg_systray    = "#00000000"
-theme.bg_focus      = "#353535A3"--"#222222" * 64%
+theme.bg_focus      = "#282828D8"--"#222222" * 85%
 theme.bg_urgent     = "#ff0000"
 theme.bg_minimize   = "#111111"
 
