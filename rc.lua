@@ -155,8 +155,33 @@ local menu_taglist_text = function ()
 end
 
 myfreedesktopmenu = freedesktop.menu.new()
+
+myscreensmenu = {
+    { "same-as",
+        "xrandr --output LVDS1 --auto --output VGA1 --auto --same-as  LVDS1",
+        beautiful.screens_sameas },
+    { "left-of",
+        "xrandr --output LVDS1 --auto --output VGA1 --auto --left-of  LVDS1",
+        beautiful.screens_leftof },
+    { "right-of",
+        "xrandr --output LVDS1 --auto --output VGA1 --auto --right-of LVDS1",
+        beautiful.screens_rightof },
+    { "above",
+        "xrandr --output LVDS1 --auto --output VGA1 --auto --above    LVDS1",
+        beautiful.screens_above },
+    { "below",
+        "xrandr --output LVDS1 --auto --output VGA1 --auto --below    LVDS1",
+        beautiful.screens_below },
+}
+if screen.count() > 1 then
+    table.insert(myscreensmenu, 1, { "off",
+        "xrandr --output LVDS1 --auto --output VGA1 --off",
+        beautiful.screens_off })
+end
+
 myawesomemenu = {
    { "wallpapers", uzful.menu.wallpaper.menu(theme.wallpapers)},
+   { "second screen", myscreensmenu },
    { menu_taglist_text(), function (m)
         taglist_filter.next()
         m.label:set_text(menu_taglist_text())
