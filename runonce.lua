@@ -1,7 +1,7 @@
 -- @author Peter J. Kranz (Absurd-Mind, peter@myref.net)
 -- Any questions, criticism or praise just drop me an email
 
-require('awful.util')
+local awful = { util = require('awful.util') }
 
 local M = {}
 
