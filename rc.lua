@@ -41,14 +41,14 @@ end
 -- }}}
 
 -- Widget library
-require("vicious")
+vicious = require("vicious")
 -- Load Debian menu entries
 require("debian.menu")
 -- Load freedesktop menu
 require('freedesktop.utils')
 require('freedesktop.menu')
 -- utils Library
-require("uzful")
+uzful = require("uzful")
 require("uzful.restore")
 -- keyboard mouse control
 require("rodentbane")
