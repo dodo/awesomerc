@@ -13,12 +13,12 @@ theme.bg_normal     = "#00000000"
 theme.bg_systray    = "#00000000"
 theme.bg_focus      = "#282828D8"--"#222222" * 85%
 theme.bg_urgent     = "#ff0000"
-theme.bg_minimize   = "#111111"
+theme.bg_minimize   = "#11111100"
 
 theme.fg_normal     = "#aaaaaa"
 theme.fg_focus      = "#ffffff"
 theme.fg_urgent     = "#ffffff"
-theme.fg_minimize   = "#ffffff"
+theme.fg_minimize   = "#424242"
 
 theme.border_width  = 0
 theme.border_normal = "#C50B0B"--"#000000"
@@ -92,10 +92,11 @@ theme.wallpapers = {
     "/home/dodo/Pictures/into_the_woods_1280x800.jpg",
     "/home/dodo/Pictures/planetoid_3_1280x800.png",
     "/home/dodo/Pictures/meh.ro7944.png",
+    "/home/dodo/Pictures/meh.ro2263.png",
     "/home/dodo/Pictures/meh.ro3274.jpg",
 }
 -- default
-theme.wallpaper_cmd = { "awsetbg -c " .. theme.wallpapers[1][1] }
+theme.wallpaper = theme.wallpapers[1][1]
 --
 
 -- You can use your own layout icons like this:

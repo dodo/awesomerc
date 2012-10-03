@@ -1,4 +1,5 @@
  -- Standard awesome library
+local gears = require("gears")
 local awful = require("awful")
 awful.autofocus = require("awful.autofocus")
 awful.rules = require("awful.rules")
@@ -110,6 +111,14 @@ local layouts =
     awful.layout.suit.max.fullscreen,
     awful.layout.suit.magnifier
 }
+-- }}}
+
+-- {{{ Wallpaper
+if beautiful.wallpaper then
+    for s = 1, screen.count() do
+        gears.wallpaper.centered(beautiful.wallpaper, s, theme.bg_normal)
+    end
+end
 -- }}}
 
 -- {{{ Tags
