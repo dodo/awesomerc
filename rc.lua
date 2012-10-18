@@ -334,6 +334,7 @@ vicious.register(mycrittemp, vicious.widgets.thermal, "$1", 30, "thermal_zone0")
 
 
 mytempgraph = awful.widget.graph({ width = 161, height = 42 })
+table.insert(detailed_graphs.widgets, mytempgraph)
 uzful.widget.set_properties(mytempgraph, {
     border_color = nil,
     color = "#AA0000",
@@ -791,7 +792,7 @@ awful.rules.rules = {
                      focus = awful.client.focus.filter,
                      keys = clientkeys,
                      buttons = clientbuttons } },
-    { rule = { class = "MPlayer" },
+    { rule = { class = "mplayer2" },
       properties = { floating = true } },
     { rule = { class = "lastfm" },
       properties = { floating = true } },

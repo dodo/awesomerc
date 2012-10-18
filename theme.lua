@@ -89,6 +89,7 @@ theme.wallpapers = {
     { dir .. "icons/awesome16.png", center = true},
     {"/home/dodo/Pictures/7003_68fd_black.png", center = true},
     {"/home/dodo/Pictures/blue_print_desktop_1600x1200_tranformed.jpg", maximize=true},
+    {"/home/dodo/Pictures/meh.ro9016.png", center = true},
     "/home/dodo/Pictures/into_the_woods_1280x800.jpg",
     "/home/dodo/Pictures/planetoid_3_1280x800.png",
     "/home/dodo/Pictures/meh.ro7944.png",
