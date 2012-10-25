@@ -470,8 +470,8 @@ mytaglist.buttons = awful.util.table.join(
                     awful.button({ modkey }, 1, awful.client.movetotag),
                     awful.button({ }, 3, awful.tag.viewtoggle),
                     awful.button({ modkey }, 3, awful.client.toggletag),
-                    awful.button({ }, 4, function(t) awful.tag.viewnext(t.screen) end),
-                    awful.button({ }, 5, function(t) awful.tag.viewprev(t.screen) end)
+                    awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
+                    awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
                     )
 mytasklist = {}
 mytasklist.buttons = awful.util.table.join(
@@ -832,6 +832,33 @@ client.connect_signal("manage", function (c, startup)
     bar.widget:buttons(awful.util.table.join(
         awful.button({ }, 1, function () awful.mouse.client.move(c)   end),
         awful.button({ }, 3, function () awful.mouse.client.resize(c) end)))
+
+    local titlebars_enabled = false
+    if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
+        -- The title goes in the middle
+        local title = awful.titlebar.widget.titlewidget(c)
+        title:buttons(awful.util.table.join(
+            awful.button({ }, 1, function () awful.mouse.client.move(c)   end),
+            awful.button({ }, 3, function () awful.mouse.client.resize(c) end)))
+        local rotation = wibox.layout.rotate()
+        rotation:set_direction("east")
+        rotation:set_widget(uzful.layout.build({
+            layout = wibox.layout.align.horizontal,
+            middle = title,
+            left = { layout = wibox.layout.fixed.horizontal,
+                awful.titlebar.widget.iconwidget(c) },
+            right = { layout = wibox.layout.fixed.horizontal,
+                awful.titlebar.widget.stickybutton(c),
+                awful.titlebar.widget.ontopbutton(c),
+                awful.titlebar.widget.maximizedbutton(c),
+                awful.titlebar.widget.floatingbutton(c),
+                awful.titlebar.widget.closebutton(c) }
+        }))
+        awful.titlebar(c, {
+            size = theme.menu_height,
+            position = "left"
+        }):set_widget(rotation)
+    end
 
     if not startup then
         -- Set the windows at the slave,
