@@ -112,6 +112,9 @@ local layouts =
     awful.layout.suit.max.fullscreen,
     awful.layout.suit.magnifier
 }
+
+SCREEN = {LVDS1=1}
+
 -- }}}
 
 -- {{{ Wallpaper
@@ -555,7 +558,7 @@ for s = 1, screen.count() do
             mypromptbox[s] },
         middle = mytasklist[s],
         right = { layout = wibox.layout.fixed.horizontal,
-            function () return s == 1 and wibox.widget.systray() or nil end,
+            function () return s == SCREEN.LVDS1 and wibox.widget.systray() or nil end,
             mynotification[s].text,
             mynetgraphs.small.layout,
             mycpugraphs.small.layout,
