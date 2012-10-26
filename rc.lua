@@ -11,6 +11,7 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 local keydoc = require("keydoc")
+local syslog = require("syslog")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -49,6 +50,7 @@ require("debian.menu")
 require('freedesktop.utils')
 require('freedesktop.menu')
 -- utils Library
+utilz = require("utilz")
 uzful = require("uzful")
 require("uzful.restore")
 -- keyboard mouse control
@@ -232,6 +234,33 @@ for name, preset in pairs(naughty.config.presets) do
     preset.border_width = "0"
     preset.bg = "#00000066"
     preset.opacity = 0.77
+end
+
+
+local syslog_enabled = true
+if syslog_enabled then
+    local sllines = 64
+    local text = ""
+
+    mysyslogtext = wibox.widget.textbox()
+    mysyslogtext:set_valign('bottom')
+
+    local push = function (w, ev, diff)
+        text = string.format("%s\n%s", text, awful.util.escape(diff))
+        text = utilz.lineswrap(text, sllines)
+        mysyslogtext:set_text(text)
+    end
+
+    local s = SCREEN.LVDS1
+    mysyslog = uzful.widget.infobox({ screen = s,
+        width = screen[s].geometry.width,
+        height = sllines * beautiful.get_font_height(theme.font),
+        position = "bottom", align = "left",
+        visible = true, ontop = false,
+        widget = mysyslogtext })
+
+    syslog.watch("/var/log/syslog", push)
+--     syslog.watch("/home/dodo/.xsession-errors", push)
 end
 
 -- mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
@@ -585,6 +614,13 @@ root.buttons(awful.util.table.join(
     awful.button({ }, 4, awful.tag.viewnext),
     awful.button({ }, 5, awful.tag.viewprev)
 ))
+if syslog_enabled then
+    mysyslogtext:buttons(awful.util.table.join(
+        awful.button({ }, 3, function () mymainmenu:toggle() end),
+        awful.button({ }, 4, awful.tag.viewnext),
+        awful.button({ }, 5, awful.tag.viewprev)
+    ))
+end
 -- }}}
 
 lock = function ()
