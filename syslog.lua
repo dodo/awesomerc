@@ -4,6 +4,7 @@ local print = print
 local pairs = pairs
 local ipairs = ipairs
 local timer = timer
+local socket = require('socket') -- luarocks install luasocket
 local inotify = require('inotify') -- needs to be https://github.com/dodo/linotify
 
 module("syslog")
@@ -38,7 +39,7 @@ function new_watcher(filename, callback)
     local wd = handle:addwatch(filename, inotify.IN_MODIFY)
     ret._handle = handle
     ret.watch = function ()
-        if handle:poll() > 0 then
+        if #socket.select({handle}, nil, 0) > 0 then
             local events = handle:read()
             if events then
                 local diff = read_log(ret)
