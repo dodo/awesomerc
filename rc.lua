@@ -246,7 +246,7 @@ if syslog_enabled then
     mysyslogtext:set_valign('bottom')
 
     local push = function (w, ev, diff)
-        text = string.format("%s\n%s", text, awful.util.escape(diff))
+        text = string.format("%s\n%s", text, diff)
         text = utilz.lineswrap(text, sllines)
         mysyslogtext:set_text(text)
     end
