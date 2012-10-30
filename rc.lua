@@ -11,7 +11,7 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 local keydoc = require("keydoc")
-local syslog = require("syslog")
+local lognotify = require("lognotify")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -239,17 +239,24 @@ end
 
 local syslog_enabled = true
 if syslog_enabled then
+    ilog = lognotify{ logs = {
+            syslog = { file = "/var/log/syslog" },
+--             xsessionerrors = { file = "/home/dodo/.xsession-errors" },
+        },
+        interval = 0.1,
+    }
     local sllines = 64
     local text = ""
 
     mysyslogtext = wibox.widget.textbox()
     mysyslogtext:set_valign('bottom')
 
-    local push = function (w, ev, diff)
+    ilog.notify = function (self, name, file, diff)
         text = string.format("%s\n%s", text, diff)
         text = utilz.lineswrap(text, sllines)
         mysyslogtext:set_text(text)
     end
+    ilog:start()
 
     local s = SCREEN.LVDS1
     mysyslog = uzful.widget.infobox({ screen = s,
@@ -258,9 +265,6 @@ if syslog_enabled then
         position = "bottom", align = "left",
         visible = true, ontop = false,
         widget = mysyslogtext })
-
-    syslog.watch("/var/log/syslog", push)
---     syslog.watch("/home/dodo/.xsession-errors", push)
 end
 
 -- mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
