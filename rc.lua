@@ -315,14 +315,15 @@ uzful.widget.set_properties(mybat.progress, {
     border_color = nil, color = "#FFFFFF" })
 vicious.register(mybat.progress, vicious.widgets.bat, "$2", 45, "BAT0")
 
-myimgbat = uzful.util.listen.vicious("text", function (val)
-        if val == "-" then
+uzful.util.listen.sysfs(function (device, props)
+    if props.action == "change" and props.power_supply_name == "AC" then
+        if props.power_supply_online == "0" then
             mybat.draw_image_first()
-        elseif val == "+" or val == "↯" then
+        else
             mybat.draw_progress_first()
         end
-    end )
-vicious.register(myimgbat, vicious.widgets.bat, "$1", 90, "BAT0")
+    end
+end)
 
 local mynotibat, mycritbat_old_val = nil, 0
 mycritbat = uzful.util.threshold(0.2,
