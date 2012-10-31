@@ -315,13 +315,22 @@ uzful.widget.set_properties(mybat.progress, {
     border_color = nil, color = "#FFFFFF" })
 vicious.register(mybat.progress, vicious.widgets.bat, "$2", 45, "BAT0")
 
-uzful.util.listen.sysfs(function (device, props)
+uzful.util.listen.sysfs({ subsystem = "power_supply" },function (device, props)
     if props.action == "change" and props.power_supply_name == "AC" then
         if props.power_supply_online == "0" then
             mybat.draw_image_first()
         else
             mybat.draw_progress_first()
         end
+    end
+end)
+
+uzful.util.listen.sysfs({ subsystem = "drm" }, function (device, props)
+    if props.action == "change" and props.devtype == "drm_minor" then
+        naughty.notify({
+            timeout = 0,
+            position = "bottom_right",
+            icon = theme.nomonitor })
     end
 end)
 

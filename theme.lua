@@ -46,6 +46,7 @@ theme.tasklist_floating_icon = dir .. "floating.png"
 -- icons
 theme.battery = dir .. "battery.png"
 theme.memory  = dir .. "memory.png"
+theme.nomonitor = dir .. "nomonitor.png"
 
 -- Variables set for theming the menu:
 -- menu_[bg|fg]_[normal|focus]
