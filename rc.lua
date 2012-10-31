@@ -326,7 +326,7 @@ uzful.util.listen.sysfs({ subsystem = "power_supply" },function (device, props)
 end)
 
 uzful.util.listen.sysfs({ subsystem = "drm" }, function (device, props)
-    if props.action == "change" and props.devtype == "drm_minor" then
+    if props.action == "change" and props.devtype == "drm_minor" and screen.count() > 1 then
         naughty.notify({
             timeout = 0,
             position = "bottom_right",
