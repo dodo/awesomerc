@@ -44,8 +44,9 @@ theme.taglist_squares_unsel = dir .. "square.png"
 theme.tasklist_floating_icon = dir .. "floating.png"
 
 -- icons
-theme.battery = dir .. "battery.png"
 theme.memory  = dir .. "memory.png"
+theme.battery = dir .. "battery.png"
+theme.nobattery = dir .. "nobattery.png"
 theme.nomonitor = dir .. "nomonitor.png"
 
 -- Variables set for theming the menu:

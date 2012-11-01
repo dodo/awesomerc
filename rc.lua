@@ -307,8 +307,18 @@ uzful.widget.set_properties(mymem.progress, {
 vicious.register(mymem.progress, vicious.widgets.mem, "$1", 13)
 
 -- Battery Progressbar
-mybat = uzful.widget.progressimage(
-    { x = 3, y = 4, width = 3, height = 7, image = theme.battery })
+local power_supply_online = ((uzful.util.scan.sysfs({
+    property = {"power_supply_name", "AC"},
+    subsystem = "power_supply",
+})[1] or {}).power_supply_online == "1")
+local battery_online = (0 < #uzful.util.scan.sysfs({
+    property = {"power_supply_name", "BAT0"},
+    subsystem = "power_supply"}))
+
+mybat = uzful.widget.progressimage({
+    image = battery_online and theme.battery or theme.nobattery,
+    draw_image_first = not power_supply_online,
+    x = 3, y = 4, width = 3, height = 7 })
 uzful.widget.set_properties(mybat.progress, {
     ticks = true, ticks_gap = 1,  ticks_size = 1,
     vertical = true, background_color = "#000000",
@@ -319,8 +329,24 @@ uzful.util.listen.sysfs({ subsystem = "power_supply" },function (device, props)
     if props.action == "change" and props.power_supply_name == "AC" then
         if props.power_supply_online == "0" then
             mybat.draw_image_first()
+            power_supply_online = false
         else
             mybat.draw_progress_first()
+            power_supply_online = true
+        end
+    elseif props.power_supply_name == "BAT0" then
+        if props.action == "remove" then
+            mybat.draw_progress_first()
+            mybat.progress:set_value(nil)
+            mybat:set_image(theme.nobattery)
+            battery_online = false
+        elseif props.action == "add" then
+            if not power_supply_online then
+                mybat.draw_image_first()
+            end
+            mybat:set_image(theme.battery)
+            vicious.force({mybat.progress})
+            battery_online = true
         end
     end
 end)
@@ -343,6 +369,11 @@ mycritbat = uzful.util.threshold(0.2,
         if mynotibat ~= nil then  naughty.destroy(mynotibat)  end
     end,
     function (val)
+        if not battery_online then
+            mybat.progress:set_background_color("#000000")
+            if mynotibat ~= nil then  naughty.destroy(mynotibat)  end
+            return
+        end
         mybat.progress:set_background_color("#8C0000")
         if val < 0.1 and val <= mycritbat_old_val then
             if mynotibat ~= nil then  naughty.destroy(mynotibat)  end
