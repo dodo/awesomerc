@@ -329,6 +329,7 @@ uzful.util.listen.sysfs({ subsystem = "drm" }, function (device, props)
     if props.action == "change" and props.devtype == "drm_minor" and screen.count() > 1 then
         naughty.notify({
             timeout = 0,
+            hover_timeout = 0.1,
             position = "bottom_right",
             icon = theme.nomonitor })
     end
