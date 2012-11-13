@@ -307,16 +307,22 @@ uzful.widget.set_properties(mymem.progress, {
 vicious.register(mymem.progress, vicious.widgets.mem, "$1", 13)
 
 -- Battery Progressbar
+local htimer = nil
+local dock_online = ((uzful.util.scan.sysfs({
+    property = {"modalias", "platform:dock"},
+    sysattr = {"type", "dock_station"},
+    subsystem = "platform",
+}).sysattrs[1] or {}).docked == "1")
 local power_supply_online = ((uzful.util.scan.sysfs({
     property = {"power_supply_name", "AC"},
     subsystem = "power_supply",
-})[1] or {}).power_supply_online == "1")
-local battery_online = (0 < #uzful.util.scan.sysfs({
+}).properties[1] or {}).power_supply_online == "1")
+local battery_online = (uzful.util.scan.sysfs({
     property = {"power_supply_name", "BAT0"},
-    subsystem = "power_supply"}))
+    subsystem = "power_supply"}).length > 0)
 
 mybat = uzful.widget.progressimage({
-    image = battery_online and theme.battery or theme.nobattery,
+    image = battery_online and (dock_online and theme.dock or theme.battery) or theme.nobattery,
     draw_image_first = not power_supply_online,
     x = 3, y = 4, width = 3, height = 7 })
 uzful.widget.set_properties(mybat.progress, {
@@ -325,7 +331,8 @@ uzful.widget.set_properties(mybat.progress, {
     border_color = nil, color = "#FFFFFF" })
 vicious.register(mybat.progress, vicious.widgets.bat, "$2", 45, "BAT0")
 
-uzful.util.listen.sysfs({ subsystem = "power_supply" },function (device, props)
+htimer = uzful.util.listen.sysfs({ subsystem = "power_supply", timer = htimer },
+                                 function (device, props)
     if props.action == "change" and props.power_supply_name == "AC" then
         if props.power_supply_online == "0" then
             mybat.draw_image_first()
@@ -344,14 +351,33 @@ uzful.util.listen.sysfs({ subsystem = "power_supply" },function (device, props)
             if not power_supply_online then
                 mybat.draw_image_first()
             end
-            mybat:set_image(theme.battery)
-            vicious.force({mybat.progress})
+            mybat:set_image(dock_online and theme.dock or theme.battery)
+            vicious.force({mybat.progress, mybtxt})
             battery_online = true
         end
     end
-end)
+end).timer
 
-uzful.util.listen.sysfs({ subsystem = "drm" }, function (device, props)
+htimer = uzful.util.listen.sysfs({ subsystem = "platform", timer = htimer },
+                                 function (device, props, attrs)
+    if props.action == "change" and
+       props.modalias == "platform:dock" and
+       attr.type == "dock_station"
+    then
+        if props.event == "undock" then
+            dock_online = false
+        elseif props.event == "dock" then
+            dock_online = true
+        end
+        if battery_online then
+            mybat:set_image(dock_online and theme.dock or theme.battery)
+        end
+    end
+end).timer
+
+
+htimer = uzful.util.listen.sysfs({ subsystem = "drm", timer = htimer },
+                                 function (device, props)
     if props.action == "change" and props.devtype == "drm_minor" and screen.count() > 1 then
         naughty.notify({
             timeout = 0,
@@ -359,7 +385,7 @@ uzful.util.listen.sysfs({ subsystem = "drm" }, function (device, props)
             position = "bottom_right",
             icon = theme.nomonitor })
     end
-end)
+end).timer
 
 local mynotibat, mycritbat_old_val = nil, 0
 mycritbat = uzful.util.threshold(0.2,

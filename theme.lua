@@ -44,6 +44,7 @@ theme.taglist_squares_unsel = dir .. "square.png"
 theme.tasklist_floating_icon = dir .. "floating.png"
 
 -- icons
+theme.dock    = dir .. "dock.png"
 theme.memory  = dir .. "memory.png"
 theme.battery = dir .. "battery.png"
 theme.nobattery = dir .. "nobattery.png"
