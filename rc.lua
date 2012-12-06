@@ -250,6 +250,7 @@ if syslog_enabled then
 
     mysyslogtext = wibox.widget.textbox()
     mysyslogtext:set_valign('bottom')
+    mysyslogtext:set_text(" \n")
 
     ilog.notify = function (self, name, file, diff)
         text = string.format("%s\n%s", text, diff)
@@ -362,7 +363,7 @@ htimer = uzful.util.listen.sysfs({ subsystem = "platform", timer = htimer },
                                  function (device, props, attrs)
     if props.action == "change" and
        props.modalias == "platform:dock" and
-       attr.type == "dock_station"
+       attrs.type == "dock_station"
     then
         if props.event == "undock" then
             dock_online = false

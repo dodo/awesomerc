@@ -24,6 +24,7 @@ function utilz.lineswrap(s, n)
     local lines = {}
     for line in utilz.string.gsplit(s, "\n") do lines[#lines+1] = line end
     while #lines > n do table.remove(lines, 1) end
+    if #lines == 0 then return "\n" end
     return table.concat(lines, "\n")
 end
 
