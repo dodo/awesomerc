@@ -437,11 +437,18 @@ if dbus then
         if state == "wireless" then
             mynet.progress:set_value((data[3] or 0) / 100)
         else
+            if state == "connecting" then
+                if data[1] == "wireless" then
+                    mynetgraphs.switch("wlan0")
+                elseif data[1] == "wired" then
+                    mynetgraphs.switch("eth0")
+                end
+            end
             mynet.progress:set_value(nil)
         end
         local text = ""
         for _, line in ipairs(data) do text = text .. line .. "\n" end
-        if text == "" then text = " " end
+        if text == "" or text == "\n" then text = " " end
         mynettxt:set_text(text)
 --         print(require('serpent').block(data))
     end)
