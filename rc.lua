@@ -413,6 +413,41 @@ mycritbat = uzful.util.threshold(0.2,
     end)
 vicious.register(mycritbat, vicious.widgets.bat, "$2", 90, "BAT0")
 
+-- Network Progressbar
+mynet = nil
+mynettxt = nil
+if dbus then
+    mynet = uzful.widget.progressimage({
+        image = theme.wicd.unknown,
+        draw_image_first = false,
+        x = 1, y = 2, width = 3, height = 9 })
+    uzful.widget.set_properties(mynet.progress, {
+        ticks = true, ticks_gap = 1,  ticks_size = 1,
+        vertical = true, background_color = "#000000",
+        border_color = nil, color = "#33FF3399" })
+    mynettxt = wibox.widget.textbox()
+    mynettxt:set_font("ProggyTinyTT 7")
+    mynettxt:set_text(" ")
+    dbus.connect_signal("org.wicd.daemon", function (ev, status, data)
+        local state = ({
+            "not_connected","connecting","wireless","wired","suspended"
+        })[status + 1] or "unknown"
+--         print("changed wicd status to "..state)
+        mynet:set_image(theme.wicd[state])
+        if state == "wireless" then
+            mynet.progress:set_value((data[3] or 0) / 100)
+        else
+            mynet.progress:set_value(nil)
+        end
+        local text = ""
+        for _, line in ipairs(data) do text = text .. line .. "\n" end
+        if text == "" then text = " " end
+        mynettxt:set_text(text)
+--         print(require('serpent').block(data))
+    end)
+    dbus.add_match("system", "type='signal',interface='org.wicd.daemon',member='StatusChanged'")
+end
+
 -- Memory Text
 mymtxt = wibox.widget.textbox()
 mymtxt:set_font("ProggyTinyTT 12")
@@ -483,7 +518,7 @@ end
 
 -- infoboxes funs
 
-myinfobox = { net = {}, cpu = {}, cal = {}, bat = {}, mem = {}, temp = {} }
+myinfobox = { net = {}, cpu = {}, cal = {}, bat = {}, mem = {}, temp = {}, wifi = {} }
 
 myinfobox.net = uzful.widget.infobox({
         position = "top", align = "right",
@@ -514,6 +549,12 @@ myinfobox.mem = uzful.widget.infobox({
         size = function () return mymtxt:fit(-1, -1) end,
         position = "top", align = "right",
         widget = mymtxt })
+if mynettxt then
+    myinfobox.wifi = uzful.widget.infobox({
+            size = function () return mynettxt:fit(-1, -1) end,
+            position = "top", align = "right",
+            widget = mynettxt })
+end
 
 mynetgraphs.small.layout:connect_signal("mouse::enter", function ()
     if detailed_graphs.visible() then
@@ -552,12 +593,22 @@ mymem:connect_signal("mouse::enter", function ()
     myinfobox.mem:show()
 end)
 
+if mynet then
+    mynet:connect_signal("mouse::enter", function ()
+        myinfobox.wifi:update()
+        myinfobox.wifi:show()
+    end)
+end
+
 mynetgraphs.small.layout:connect_signal("mouse::leave", myinfobox.net.hide)
 mycpugraphs.small.layout:connect_signal("mouse::leave", myinfobox.cpu.hide)
 mytextclock:connect_signal("mouse::leave", myinfobox.cal.hide)
 mytemp:connect_signal("mouse::leave", myinfobox.temp.hide)
 mybat:connect_signal("mouse::leave", myinfobox.bat.hide)
 mymem:connect_signal("mouse::leave", myinfobox.mem.hide)
+if mynet then
+    mynet:connect_signal("mouse::leave", myinfobox.wifi.hide)
+end
 
 
 
@@ -666,6 +717,7 @@ for s = 1, screen.count() do
             mycpugraphs.small.layout,
             mytemp,
             mytextclock,
+            mynet,
             mybat,
             mymem,
             mylayoutbox[s] }

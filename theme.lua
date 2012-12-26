@@ -49,6 +49,13 @@ theme.memory  = dir .. "memory.png"
 theme.battery = dir .. "battery.png"
 theme.nobattery = dir .. "nobattery.png"
 theme.nomonitor = dir .. "nomonitor.png"
+theme.wicd = {}
+theme.wicd.wired      = dir .. "wicd/wired.png"
+theme.wicd.unknown    = dir .. "wicd/unknown.png"
+theme.wicd.wireless   = dir .. "wicd/wireless.png"
+theme.wicd.suspended  = dir .. "wicd/suspended.png"
+theme.wicd.connecting = dir .. "wicd/connecting.png"
+theme.wicd.not_connected = dir .. "wicd/not_connected.png"
 
 -- Variables set for theming the menu:
 -- menu_[bg|fg]_[normal|focus]
