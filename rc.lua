@@ -452,7 +452,8 @@ if dbus then
         mynettxt:set_text(text)
 --         print(require('serpent').block(data))
     end)
-    dbus.add_match("system", "type='signal',interface='org.wicd.daemon',member='StatusChanged'")
+    dbus.add_match("system",
+             "type='signal',interface='org.wicd.daemon',member='StatusChanged'")
 end
 
 -- Memory Text
@@ -499,7 +500,7 @@ mynetgraphs = uzful.widget.netgraphs({ default = "wlan0",
     big = { width = 161, height = 42, interval = 2, scale = "kb" },
     small = { width = 23, height = theme.menu_height, interval = 2 } })
 
-mynetgraphs.small.layout:connect_signal("button::release", mynetgraphs.switch)
+mynetgraphs.small.layout:connect_signal("button::release", mynetgraphs.toggle)
 
 for _, widget in ipairs(mynetgraphs.big.widgets) do
     table.insert(detailed_graphs.widgets, widget)
