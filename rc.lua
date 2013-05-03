@@ -73,6 +73,7 @@ couth.indicator.barIndicator = function (prct)
     local bar = string.rep(BAR[9], full_bars) .. BAR[part_bar]
     return bar .. string.rep( " ", maxBars - full_bars - (part_bar > 1 and 1 or 0))
 end
+require("backlight") -- uses couch too
 
 
 -- {{{ Variable definitions
@@ -778,6 +779,10 @@ volume = {
         toggle = function ()  couth.notifier:notify( couth.alsa:setVolume('PCM','toggle'))        end,
     },
 }
+backlight = {
+    lighten  = function (x) couth.notifier:notify( couth.back:setLight( x or 10)) end,
+    darken   = function (x) couth.notifier:notify( couth.back:setLight((x or 10) * -1)) end,
+}
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
@@ -851,6 +856,11 @@ globalkeys = awful.util.table.join(
     awful.key({ "Control", "Shift" }, "XF86AudioRaiseVolume", function () volume.pcm.raise(5) end),
 
     keydoc.group("misc"),
+    awful.key({}, "XF86MonBrightnessDown", backlight.darken,  "darken backlight" ),
+    awful.key({}, "XF86MonBrightnessUp",   backlight.lighten, "lighten backlight"),
+    awful.key({ "Shift" }, "XF86MonBrightnessDown", function () backlight.darken( 20) end),
+    awful.key({ "Shift" }, "XF86MonBrightnessUp",   function () backlight.lighten(20) end),
+
     awful.key({ modkey,           }, "Print",  screenshot,"screenshot"),
     awful.key({ modkey,           }, "w", function ()
             local g = screen[mouse.screen].geometry
