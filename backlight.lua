@@ -38,6 +38,6 @@ function couth.back:getLight()
 end
 
 function couth.back:setLight(val)
-    io.popen("xbacklight " .. (val < 0 and "-" or "+") .. math.abs(val)):close()
+    io.popen("xbacklight -time 0 " .. (val < 0 and "-" or "+") .. math.abs(val)):close()
     return self:getLight()
 end
