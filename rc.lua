@@ -429,16 +429,22 @@ if dbus then
     mynettxt = wibox.widget.textbox()
     mynettxt:set_font("ProggyTinyTT 7")
     mynettxt:set_text(" ")
+    local connecting = false
     dbus.connect_signal("org.wicd.daemon", function (ev, status, data)
         local state = ({
             "not_connected","connecting","wireless","wired","suspended"
         })[status + 1] or "unknown"
 --         print("changed wicd status to "..state)
         mynet:set_image(theme.wicd[state])
+        if connecting and (state == "wireless" or state == "wired") then
+            connecting = false
+            mynetgraphs.update_widget()
+        end
         if state == "wireless" then
             mynet.progress:set_value((data[3] or 0) / 100)
         else
             if state == "connecting" then
+                connecting = true
                 if data[1] == "wireless" then
                     mynetgraphs.switch("wlan0")
                 elseif data[1] == "wired" then
@@ -501,7 +507,19 @@ mynetgraphs = uzful.widget.netgraphs({ default = "wlan0",
     big = { width = 161, height = 42, interval = 2, scale = "kb" },
     small = { width = 23, height = theme.menu_height, interval = 2 } })
 
-mynetgraphs.small.layout:connect_signal("button::release", mynetgraphs.toggle)
+mynetgraphs.update_active()
+mynetgraphs.update_widget = function ()
+    mynetgraphs.update_active()
+    myinfobox.net.height = mynetgraphs.big.height
+    myinfobox.net:update()
+end
+mynetgraphs.small.layout:buttons(awful.util.table.join(
+    awful.button({ }, 1, mynetgraphs.toggle),
+    awful.button({ }, 2, mynetgraphs.update_widget),
+    awful.button({ }, 3, mynetgraphs.toggle),
+    awful.button({ }, 4, mynetgraphs.toggle),
+    awful.button({ }, 5, mynetgraphs.toggle)
+))
 
 for _, widget in ipairs(mynetgraphs.big.widgets) do
     table.insert(detailed_graphs.widgets, widget)
