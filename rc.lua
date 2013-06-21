@@ -854,6 +854,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "l",     function () awful.tag.incnmaster(-1)      end, "decrease number of masters"),
     awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1)         end, "increase number of columns"),
     awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1)         end, "decrease number of columns"),
+    awful.key({ modkey, "Control" }, "r",     uzful.layout.reset, "reset layout back to defaults"),
     awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end, "next layout"),
     awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end, "previous layout"),
 
@@ -891,7 +892,7 @@ globalkeys = awful.util.table.join(
         end, "menu"),
     -- Standard program
     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end, "spawn terminal"),
-    awful.key({ modkey, "Control" }, "r", awesome.restart,"restart awesome"),
+    awful.key({ modkey, "Shift", "Control" }, "r", awesome.restart,"restart awesome"),
     awful.key({ modkey, "Shift"   }, "q", awesome.quit, "quit awesome"),
 
     -- Prompt
