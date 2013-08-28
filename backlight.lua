@@ -34,7 +34,7 @@ couth.back = {}
 
 function couth.back:getLight()
     local val = pread("xbacklight -get")
-    return '<span color="green">⛯ ' .. couth.indicator.barIndicator(val) .. "</span>"
+    return '<span color="green">☀ ' .. couth.indicator.barIndicator(val) .. "</span>"
 end
 
 function couth.back:setLight(val)

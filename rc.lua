@@ -517,11 +517,12 @@ vicious.register(mytempgraph, vicious.widgets.thermal, "$1", 4, "thermal_zone0")
 -- net usage graphs
 
 mynetgraphs = uzful.widget.netgraphs({ default = "wlan0",
-    up_fgcolor = "#D00003", down_fgcolor = "#95D043",
+    up_fgcolor = "#D0000399", down_fgcolor = "#95D04399",
+    up_mgcolor = "#D0000311", down_mgcolor = "#95D04311",
     highlight = ' <b>$1</b>', direction = "right",
     normal    = ' <span color="#666666">$1</span>',
-    big = { width = 161, height = 42, interval = 2, scale = "kb" },
-    small = { width = 23, height = theme.menu_height, interval = 2 } })
+    big = { width = 161, height = 42, interval = 1, scale = "kb" },
+    small = { width = 23, height = theme.menu_height, interval = 1 } })
 
 mynetgraphs.update_active()
 mynetgraphs.update_widget = function ()
@@ -723,7 +724,8 @@ for s = 1, screen.count() do
 
     -- Create a notification manager widget
     mynotification[s] = uzful.notifications(s, {
-        max = 605, menu = { theme = { menu_width = 242 } },
+        max = screen[s].workarea.height - theme.menu_height,
+        menu = { theme = { width = 342 } },
         text = '<span size="small">$1</span>' })
 
     -- Create the wibox
