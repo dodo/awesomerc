@@ -193,9 +193,25 @@ if screen.count() > 1 then
         beautiful.screens_off })
 end
 
+mysystemmenu = {}
+lock          = function () awful.util.spawn_with_shell("xtrlock")           end
+screenshot    = function () awful.util.spawn("ksnapshot")                    end
+invert_screen = function () awful.util.spawn("xcalib -invert -alter", false) end
+table.insert(mysystemmenu, { "invert screen", invert_screen })
+table.insert(mysystemmenu, { "screenshot", screenshot })
+table.insert(mysystemmenu, { "lock", lock })
+if dbus then
+    table.insert(mysystemmenu, { "suspend", function ()
+        naughty.notify({ text = "system suspsending  ... " })
+        awful.util.spawn_with_shell("sync && dbus-send --system --print-reply --dest='org.freedesktop.UPower' /org/freedesktop/UPower org.freedesktop.UPower.Suspend &")
+        lock()
+    end })
+end
+
 myawesomemenu = {
-   { "wallpapers", uzful.menu.wallpaper.menu(theme.wallpapers)},
+   { "system", mysystemmenu },
    { "second screen", myscreensmenu },
+   { "wallpapers", uzful.menu.wallpaper.menu(theme.wallpapers)},
    { menu_taglist_text(), function (m)
         taglist_filter.next()
         m.label:set_text(menu_taglist_text())
@@ -774,16 +790,6 @@ if syslog_enabled then
     ))
 end
 -- }}}
-
-lock = function ()
-    awful.util.spawn("xtrlock")
-end
-invert_screen = function ()
-    awful.util.spawn("xcalib -invert -alter")
-end
-screenshot = function ()
-    awful.util.spawn("ksnapshot")
-end
 
 volume = {
     master = {
