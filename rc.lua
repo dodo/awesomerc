@@ -11,6 +11,7 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 local keydoc = require("keydoc")
+-- luarocks install inotify INOTIFY_INCDIR=/usr/include/x86_64-linux-gnu
 local lognotify = require("lognotify")
 
 -- {{{ Error handling
@@ -521,8 +522,8 @@ mynetgraphs = uzful.widget.netgraphs({ default = "wlan0",
     up_mgcolor = "#D0000311", down_mgcolor = "#95D04311",
     highlight = ' <b>$1</b>', direction = "right",
     normal    = ' <span color="#666666">$1</span>',
-    big = { width = 161, height = 42, interval = 1, scale = "kb" },
-    small = { width = 23, height = theme.menu_height, interval = 1 } })
+    big = { width = 161, height = 42, interval = 2, scale = "kb" },
+    small = { width = 23, height = theme.menu_height, interval = 2 } })
 
 mynetgraphs.update_active()
 mynetgraphs.update_widget = function ()
