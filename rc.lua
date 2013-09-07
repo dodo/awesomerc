@@ -688,12 +688,20 @@ mytasklist.buttons = awful.util.table.join(
                                                   c:raise()
                                               end
                                           end),
+                     awful.button({ }, 2, function ()
+                                              if instance then
+                                                  instance:hide()
+                                                  instance = nil
+                                              else
+                                                  instance = uzful.menu.daemons(nil,{theme={width=250}})
+                                              end
+                                          end),
                      awful.button({ }, 3, function ()
                                               if instance then
                                                   instance:hide()
                                                   instance = nil
                                               else
-                                                  instance = awful.menu.clients(nil,{theme={width=250}})
+                                                  instance = uzful.menu.clients(nil,{theme={width=250}})
                                               end
                                           end),
                      awful.button({ }, 4, function ()
