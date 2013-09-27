@@ -14,6 +14,14 @@ local keydoc = require("keydoc")
 -- luarocks install inotify INOTIFY_INCDIR=/usr/include/x86_64-linux-gnu
 local lognotify = require("lognotify")
 
+
+-- default values for notifications
+naughty.config.defaults.font = "uni 05_53 6"
+naughty.config.defaults.border_width = "0"
+naughty.config.defaults.bg = "#00000066"
+naughty.config.defaults.opacity = 0.77
+
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -240,20 +248,39 @@ myawesomemenu = {
    { "quit", awesome.quit },
 }
 
+function lol(m)
+      m.pups = not m.pups
+      if m.pups then
+        m.theme.bg_focus = "#FFFF00"
+      else
+        m.theme.bg_focus = "#0000FF"
+      end
+      m.theme.bg_normal = m.theme.bg_focus
+      m._background:set_bg(m.theme.bg_focus)
+      naughty.notify({
+          text = m.label._layout.text .. " is " .. (m.pups and "on" or "off"),
+--           preset = naughty.config.presets.critical,
+          bg = m.theme.bg_focus,
+      })
+      return true
+    end
 mymainmenu = awful.menu({ max = 100,
+--     { "test", {
+--       {"A",lol},
+--       {"B",lol},
+--       {"C",lol},
+--       {"D",lol},
+--       {"E",lol},
+--       {"F",lol},
+--       {"G",lol},
+--       {"R",lol},
+--       {"Z", lol}
+--     }},
     { "awesome", myawesomemenu, beautiful.awesome_icon },
     { "Menu", myfreedesktopmenu, freedesktop.utils.lookup_icon({ icon = 'kde' }) },
     { "Debian", debian.menu.Debian_menu.Debian, freedesktop.utils.lookup_icon({ icon = 'debian-logo' }) },
     { "open terminal", terminal, freedesktop.utils.lookup_icon({ icon = 'terminal' }) },
                         })
-
-for name, preset in pairs(naughty.config.presets) do
-    preset.font = "uni 05_53 6"
-    preset.border_width = "0"
-    preset.bg = "#00000066"
-    preset.opacity = 0.77
-end
-
 
 local syslog_enabled = true
 if syslog_enabled then
