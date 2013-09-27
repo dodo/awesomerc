@@ -125,7 +125,7 @@ local layouts =
     awful.layout.suit.magnifier
 }
 
-SCREEN = {LVDS1=1}
+SCREEN = {LVDS1=1,HDMI1=1,VGA1=1}
 
 -- }}}
 
@@ -153,6 +153,8 @@ myrestorelist = uzful.restore(layouts)
 -- {{{ Menu
 -- Create a laucher widget and a main menu
 
+myextscreen = "HDMI1"
+
 detailed_graphs = uzful.menu.toggle_widgets()
 
 taglist_filter = uzful.util.functionlist({
@@ -165,6 +167,14 @@ end
 
 local menu_tags_text = function ()
     return (tags_numbered and "symbol" or "number") .. " tags"
+end
+
+local menu_screen_text = function ()
+    return ({
+        LVDS1 = "Local",
+        VGA1  = "VGA",
+        HDMI1 = "DP++",
+    })[myextscreen]
 end
 
 local menu_taglist_text = function ()
@@ -181,24 +191,35 @@ myfreedesktopmenu = freedesktop.menu.new()
 
 myscreensmenu = {
     { "same-as",
-        "xrandr --output LVDS1 --auto --output VGA1 --auto --same-as  LVDS1",
+        "xrandr --output LVDS1 --auto --output "..myextscreen.." --auto --same-as  LVDS1",
         beautiful.screens_sameas },
     { "left-of",
-        "xrandr --output LVDS1 --auto --output VGA1 --auto --left-of  LVDS1",
+        "xrandr --output LVDS1 --auto --output "..myextscreen.." --auto --left-of  LVDS1",
         beautiful.screens_leftof },
     { "right-of",
-        "xrandr --output LVDS1 --auto --output VGA1 --auto --right-of LVDS1",
+        "xrandr --output LVDS1 --auto --output "..myextscreen.." --auto --right-of LVDS1",
         beautiful.screens_rightof },
     { "above",
-        "xrandr --output LVDS1 --auto --output VGA1 --auto --above    LVDS1",
+        "xrandr --output LVDS1 --auto --output "..myextscreen.." --auto --above    LVDS1",
         beautiful.screens_above },
     { "below",
-        "xrandr --output LVDS1 --auto --output VGA1 --auto --below    LVDS1",
+        "xrandr --output LVDS1 --auto --output "..myextscreen.." --auto --below    LVDS1",
         beautiful.screens_below },
+    { menu_screen_text(), function (m, menu)
+        local prev = myextscreen
+        myextscreen = (myextscreen == "HDMI1" and "VGA1" or "HDMI1")
+        m.label:set_text(menu_screen_text())
+        for _, item in ipairs(menu.items) do
+            if type(item.cmd) == 'string' then
+                item.cmd = string.gsub(item.cmd, prev, myextscreen)
+            end
+        end
+        return true
+    end },
 }
 if screen.count() > 1 then
     table.insert(myscreensmenu, 1, { "off",
-        "xrandr --output LVDS1 --auto --output VGA1 --off",
+        "xrandr --output LVDS1 --auto --output "..myextscreen.." --off",
         beautiful.screens_off })
 end
 
