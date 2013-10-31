@@ -1027,6 +1027,11 @@ for i = 1, keynumber do
                             awful.tag.viewonly(tags[screen][i])
                         end
                   end),
+        awful.key({ modkey, "Mod1" }, "#" .. i + 9,
+                  function ()
+                      uzful.client.focus.byabsidx(i)
+                      if client.focus then client.focus:raise() end
+                  end),
         awful.key({ modkey, "Control" }, "#" .. i + 9,
                   function ()
                       local screen = mouse.screen
