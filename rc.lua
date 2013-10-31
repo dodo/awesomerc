@@ -11,8 +11,6 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 local keydoc = require("keydoc")
--- luarocks install inotify INOTIFY_INCDIR=/usr/include/x86_64-linux-gnu
-local lognotify = require("lognotify")
 
 
 -- default values for notifications
@@ -63,7 +61,9 @@ utilz = require("utilz")
 uzful = require("uzful")
 require("uzful.restore")
 -- keyboard mouse control
-require("rodentbane")
+if uzful.util.module.exists(package, "rodentbane") then
+    require("rodentbane")
+end
 -- audio control
 require("couth")
 require("couth.lib.alsa")
@@ -303,8 +303,10 @@ mymainmenu = awful.menu({ max = 100,
     { "open terminal", terminal, freedesktop.utils.lookup_icon({ icon = 'terminal' }) },
                         })
 
-local syslog_enabled = true
+local syslog_enabled = uzful.util.module.exists('inotify') and uzful.util.module.exists('socket')
 if syslog_enabled then
+        -- luarocks install inotify INOTIFY_INCDIR=/usr/include/x86_64-linux-gnu
+    local lognotify = require("lognotify")
     ilog = lognotify{ logs = {
             syslog = { file = "/var/log/syslog" },
 --             xsessionerrors = { file = "/home/dodo/.xsession-errors" },
