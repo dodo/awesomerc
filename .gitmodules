@@ -3,7 +3,7 @@
 	url = git://github.com/terceiro/awesome-freedesktop.git
 [submodule "obvious"]
 	path = obvious
-	url = git://git.mercenariesguild.net/obvious.git
+	url = git://github.com/hoelzro/obvious.git
 [submodule "uzful"]
 	path = uzful
 	url = git://github.com/dodo/uzful.git
