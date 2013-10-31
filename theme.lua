@@ -3,6 +3,7 @@
 ---------------------------
 
 local awful = require("awful")
+local couth = require("couth")
 
 theme = {}
 
@@ -138,6 +139,9 @@ theme.screens_below   = dir .. "screens/below.png"
 theme.screens_sameas  = dir .. "screens/same-as.png"
 theme.screens_off     = dir .. "screens/off.png"
 
+couth.CONFIG.NOTIFIER_FONT = "mono 5"
+couth.CONFIG.INDICATOR_BARS = {'▏','▎','▍','▌','▋','▊','▉','█'}
+couth.CONFIG.INDICATOR_BORDERS = {'',''}
 
 return theme
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:encoding=utf-8:textwidth=80

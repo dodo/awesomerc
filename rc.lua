@@ -67,9 +67,6 @@ end
 -- audio control
 couth = require("couth")
 require("couth.lib.alsa")
-couth.CONFIG.NOTIFIER_FONT = "mono 5"
-couth.CONFIG.INDICATOR_BARS = {'▏','▎','▍','▌','▋','▊','▉','█'}
-couth.CONFIG.INDICATOR_BORDERS = {'',''}
 couth.CONFIG.ALSA_CONTROLS = {
     'Master',
     'PCM',
