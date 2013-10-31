@@ -65,23 +65,15 @@ if uzful.util.module.exists(package, "rodentbane") then
     require("rodentbane")
 end
 -- audio control
-require("couth")
+couth = require("couth")
 require("couth.lib.alsa")
 couth.CONFIG.NOTIFIER_FONT = "mono 5"
-couth.CONFIG.INDICATOR_BARS = {'','▏','▎','▍','▌','▋','▊','▉','█'}
+couth.CONFIG.INDICATOR_BARS = {'▏','▎','▍','▌','▋','▊','▉','█'}
+couth.CONFIG.INDICATOR_BORDERS = {'',''}
 couth.CONFIG.ALSA_CONTROLS = {
     'Master',
     'PCM',
 }
-couth.indicator.barIndicator = function (prct)
-    local BAR = couth.CONFIG.INDICATOR_BARS
-    local maxBars = couth.CONFIG.INDICATOR_MAX_BARS
-    local num_bars = maxBars * prct * 0.01
-    local full_bars = math.floor(num_bars)
-    local part_bar = math.floor((num_bars - full_bars) * 7) + 1
-    local bar = string.rep(BAR[9], full_bars) .. BAR[part_bar]
-    return bar .. string.rep( " ", maxBars - full_bars - (part_bar > 1 and 1 or 0))
-end
 require("backlight") -- uses couch too
 
 

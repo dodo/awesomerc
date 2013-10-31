@@ -30,6 +30,7 @@
 --
 ---------------------------------------------------------------------------
 local pread = require("awful.util").pread
+local couth = require("couth")
 couth.back = {}
 
 function couth.back:getLight()
