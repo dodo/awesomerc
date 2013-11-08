@@ -16,3 +16,6 @@
 [submodule "lognotify"]
 	path = lognotify
 	url = git://github.com/Mic92/lognotify.git
+[submodule "rodentbane"]
+	path = rodentbane
+	url = git://github.com/GGLucas/rodentbane.git
