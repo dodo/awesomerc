@@ -12,10 +12,10 @@
 	url = http://git.sysphere.org/vicious
 [submodule "couth"]
 	path = couth
-	url = git://github.com/gorlowski/couth.git
+	url = git://github.com/dodo/couth.git
 [submodule "lognotify"]
 	path = lognotify
 	url = git://github.com/Mic92/lognotify.git
 [submodule "rodentbane"]
 	path = rodentbane
-	url = git://github.com/GGLucas/rodentbane.git
+	url = git://github.com/dodo/rodentbane.git
