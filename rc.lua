@@ -362,7 +362,7 @@ uzful.widget.set_properties(mymem.progress, {
     vertical = true, background_color = "#000000",
     border_color = nil, color = "#0173FF" })
 --mymem:set_color({ "#001D40", "#535d6c", "#0173FF" })
-vicious.register(mymem.progress, vicious.widgets.mem, "$1", 13)
+vicious.register(mymem.progress, vicious.widgets.mem, "$1", 4)
 
 -- Battery Progressbar
 local htimer = nil
@@ -387,7 +387,7 @@ uzful.widget.set_properties(mybat.progress, {
     ticks = true, ticks_gap = 1,  ticks_size = 1,
     vertical = true, background_color = "#000000",
     border_color = nil, color = "#FFFFFF" })
-vicious.register(mybat.progress, vicious.widgets.bat, "$2", 45, "BAT0")
+vicious.register(mybat.progress, vicious.widgets.bat, "$2", 60, "BAT0")
 
 htimer = uzful.util.listen.sysfs({ subsystem = "power_supply", timer = htimer },
                                  function (device, props)
@@ -468,7 +468,7 @@ mycritbat = uzful.util.threshold(0.2,
         end
         mycritbat_old_val = val
     end)
-vicious.register(mycritbat, vicious.widgets.bat, "$2", 90, "BAT0")
+vicious.register(mycritbat, vicious.widgets.bat, "$2", 60, "BAT0")
 
 -- Network Progressbar
 mynet = nil
@@ -586,12 +586,12 @@ end
 
 mycpugraphs = uzful.widget.cpugraphs({
     fgcolor = "#D0752A", bgcolor = "#000000", direction = "right",
-    load = { interval = 20, font = "ProggyTinyTT 10",
+    load = { interval = 30, font = "ProggyTinyTT 10",
         text = ' <span color="#666666">$1</span>' ..
                '  <span color="#9A9A9A">$2</span>' ..
                '  <span color="#DDDDDD">$3</span>' },
-    big = { width = 161, height = 42, interval = 1, direction = "left" },
-    small = { width = 42, height = theme.menu_height, interval = 1 } })
+    big = { width = 161, height = 42, interval = 2, direction = "left" },
+    small = { width = 42, height = theme.menu_height, interval = 2 } })
 
 table.insert(detailed_graphs.widgets, mycpugraphs.load)
 for _, widget in ipairs(mycpugraphs.big.widgets) do
