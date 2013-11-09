@@ -41,8 +41,12 @@ end
 
 local function writePid(filename, pid)
     local pidFile = io.open(filename, "w+")
-    pidFile:write(pid)
-    pidFile:close()
+    if pidFile == nil then
+        print("failed to write pid " .. pid .. " to " .. filename)
+    else
+        pidFile:write(pid)
+        pidFile:close()
+    end
 end
 
 local function shallExecute(oldPid, newPid)
