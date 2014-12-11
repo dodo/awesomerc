@@ -1,16 +1,19 @@
+jit.on()
  -- Standard awesome library
-local gears = require("gears")
-local awful = require("awful")
+gears = require("gears")
+awful = require("awful")
 awful.autofocus = require("awful.autofocus")
 awful.rules = require("awful.rules")
 -- Widget and layout library
-local wibox = require("wibox")
+wibox = require("wibox")
 -- Theme handling library
-local beautiful = require("beautiful")
+beautiful = require("beautiful")
 -- Notification library
-local naughty = require("naughty")
-local menubar = require("menubar")
-local keydoc = require("keydoc")
+naughty = require("naughty")
+menubar = require("menubar")
+keydoc = require("keydoc")
+
+
 
 
 -- default values for notifications
@@ -28,10 +31,6 @@ if awesome.startup_errors then
                      title = "Oops, there were errors during startup!",
                      text = awesome.startup_errors })
 end
-
-menubar.cache_entries = true
-menubar.show_categories = true   -- Change to false if you want only programs to appear in the menu
-menubar.geometry.height = 14
 
 -- Handle runtime errors after startup
 do
@@ -79,6 +78,15 @@ require("backlight") -- uses couch too
 beautiful.init(awful.util.getdir("config") .. "/theme.lua")
 uzful.notifications.patch()
 uzful.util.patch.vicious()
+
+menubar.cache_entries = true
+menubar.show_categories = true   -- Change to false if you want only programs to appear in the menu
+menubar.geometry.height = theme.menu_height
+repl.geometry.height = theme.menu_height
+
+-- vicious caching
+vicious.cache(vicious.widgets.thermal)
+vicious.cache(vicious.widgets.net)
 
 -- This is used later as the default terminal and editor to run.
 terminal = "x-terminal-emulator"
@@ -212,6 +220,7 @@ if screen.count() > 1 then
 end
 
 mysystemmenu = {}
+unagi         = function () awful.util.spawn_with_shell("unagi")             end
 lock          = function () awful.util.spawn_with_shell("xtrlock")           end
 screenshot    = function () awful.util.spawn("ksnapshot")                    end
 invert_screen = function () awful.util.spawn("xcalib -invert -alter", false) end
@@ -221,8 +230,7 @@ table.insert(mysystemmenu, { "lock", lock })
 if dbus then
     table.insert(mysystemmenu, { "suspend", function ()
         naughty.notify({ text = "system suspsending  ... " })
-        awful.util.spawn_with_shell("sync && dbus-send --system --print-reply --dest='org.freedesktop.UPower' /org/freedesktop/UPower org.freedesktop.UPower.Suspend &")
-        lock()
+        awful.util.spawn_with_shell("sync && dbus-send --system --print-reply --dest='org.freedesktop.UPower' /org/freedesktop/UPower org.freedesktop.UPower.Suspend & xtrlock")
     end })
 end
 
