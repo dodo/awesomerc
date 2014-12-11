@@ -787,8 +787,41 @@ end
 
 
 
+tagstatus = function ()
+    local ncol = awful.tag.getncol()
+    local nmaster = awful.tag.getnmaster()
+    local mwfact = awful.tag.getmwfact() * 100
+    naughty.notify({ text = string.format(
+        "master width factor is now %d%%\nnmaster is now %d\nncol is now %d",
+        mwfact, nmaster, ncol
+    )})
+end
 
-mylayoutmenu = uzful.menu.layouts(layouts, { align = "right", width = 60 })
+mylayoutmenu = uzful.menu.layouts(awful.layout.layouts, { align = "right", width = 60 })
+mylayoutmenu:add({
+    "actions", { theme = { width = 150 },
+        { "status", tagstatus },
+        { "invert master width factor", function ()
+            awful.tag.setmwfact(1 - awful.tag.getmwfact())
+            naughty.notify({ text = string.format(
+                "master width factor is now %d%%", awful.tag.getmwfact() * 100
+            )})
+        end },
+        { "swap column master", function ()
+            local ncol = awful.tag.getncol()
+            local nmaster = awful.tag.getnmaster()
+            awful.tag.setnmaster(ncol)
+            awful.tag.setncol(nmaster)
+            naughty.notify({ text = string.format(
+                "nmaster is now %d\nncol is now %d", nmaster, ncol
+            )})
+        end },
+        { "reset", function ()
+            uzful.layout.reset()
+            tagstatus()
+        end },
+    },
+})
 
 -- Create a wibox for each screen and add it
 mywibox = {}
