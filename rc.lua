@@ -96,8 +96,7 @@ freedesktop.utils.icon_theme = 'default.kde4'
 modkey = "Mod4"
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
-local layouts =
-{
+awful.layout.layouts = {
     awful.layout.suit.floating,
     awful.layout.suit.tile,
     awful.layout.suit.tile.left,
@@ -133,10 +132,10 @@ tags_numbered = false
 tag_names = {"☼", "✪", "⌥", "✇", "⌤", "⍜", "⌬", "♾", "⌘", "⚗", "Ω", "·"}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag(tag_names, s, layouts[12])
+    tags[s] = awful.tag(tag_names, s, awful.layout.layouts[12])
 end
 
-myrestorelist = uzful.restore(layouts)
+myrestorelist = uzful.restore()
 -- }}}
 
 -- {{{ Menu
@@ -759,11 +758,11 @@ for s = 1, screen.count() do
     -- We need one layoutbox per screen.
     mylayoutbox[s] = awful.widget.layoutbox(s)
     mylayoutbox[s]:buttons(awful.util.table.join(
-                           awful.button({ }, 1, function () awful.layout.inc(layouts, 1) end),
+                           awful.button({ }, 1, function () awful.layout.inc( 1) end),
                            awful.button({ }, 2, function () mylayoutmenu:toggle() end),
-                           awful.button({ }, 3, function () awful.layout.inc(layouts, -1) end),
-                           awful.button({ }, 4, function () awful.layout.inc(layouts, 1) end),
-                           awful.button({ }, 5, function () awful.layout.inc(layouts, -1) end)))
+                           awful.button({ }, 3, function () awful.layout.inc(-1) end),
+                           awful.button({ }, 4, function () awful.layout.inc( 1) end),
+                           awful.button({ }, 5, function () awful.layout.inc(-1) end)))
     -- Create a taglist widget
     mytaglist[s] = awful.widget.taglist(s, taglist_filter.call, mytaglist.buttons)
 
@@ -911,8 +910,8 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Control" }, "h",     function () awful.tag.incncol( 1)         end, "increase number of columns"),
     awful.key({ modkey, "Control" }, "l",     function () awful.tag.incncol(-1)         end, "decrease number of columns"),
     awful.key({ modkey, "Control" }, "r",     uzful.layout.reset, "reset layout back to defaults"),
-    awful.key({ modkey,           }, "space", function () awful.layout.inc(layouts,  1) end, "next layout"),
-    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(layouts, -1) end, "previous layout"),
+    awful.key({ modkey,           }, "space", function () awful.layout.inc( 1) end, "next layout"),
+    awful.key({ modkey, "Shift"   }, "space", function () awful.layout.inc(-1) end, "previous layout"),
 
     keydoc.group("control sound"),
     awful.key({ modkey            }, "<",            volume.master.lower, "lower master"),
@@ -1060,6 +1059,7 @@ awful.rules.rules = {
       properties = { border_width = beautiful.border_width,
                      border_color = beautiful.border_normal,
                      focus = awful.client.focus.filter,
+                     raise = true,
                      keys = clientkeys,
                      buttons = clientbuttons } },
     { rule = { class = "mplayer2" },
@@ -1080,49 +1080,46 @@ awful.rules.rules = {
 
 -- {{{ Signals
 -- Signal function to execute when a new client appears.
-client.connect_signal("manage", function (c, startup)
+client.connect_signal("manage", function (c)
     c.opacity = 1
-    -- Enable sloppy focus
-    c:connect_signal("mouse::enter", function(c)
-        if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
-            and awful.client.focus.filter(c) then
-            client.focus = c
-        end
-    end)
 
-    local bar = uzful.widget.titlebar(c)
-    bar.widget:buttons(awful.util.table.join(
+    local layout = uzful.layout.build({
+        layout = wibox.layout.align.horizontal,
+        middle = awful.titlebar.widget.titlewidget(c),
+        left = { layout = wibox.layout.fixed.horizontal,
+            awful.titlebar.widget.iconwidget(c) },
+        right = { layout = wibox.layout.fixed.horizontal,
+            awful.titlebar.widget.stickybutton(c),
+            awful.titlebar.widget.ontopbutton(c),
+            awful.titlebar.widget.maximizedbutton(c),
+            awful.titlebar.widget.floatingbutton(c),
+            awful.titlebar.widget.closebutton(c) }
+    })
+    local mouse_buttons = awful.util.table.join(
         awful.button({ }, 1, function () awful.mouse.client.move(c)   end),
-        awful.button({ }, 3, function () awful.mouse.client.resize(c) end)))
+        awful.button({ }, 3, function () awful.mouse.client.resize(c) end))
+    layout.first:buttons(mouse_buttons) -- left
+    layout.second:buttons(mouse_buttons) -- middle
 
-    local titlebars_enabled = false
-    if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
-        -- The title goes in the middle
-        local title = awful.titlebar.widget.titlewidget(c)
-        title:buttons(awful.util.table.join(
-            awful.button({ }, 1, function () awful.mouse.client.move(c)   end),
-            awful.button({ }, 3, function () awful.mouse.client.resize(c) end)))
+    local titlebars_ontop = true
+    if titlebars_ontop then
+
+        uzful.widget.titlebar(c, {
+            size = theme.menu_height,
+        }).rotation:set_widget(layout)
+    else
+--     if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
         local rotation = wibox.layout.rotate()
         rotation:set_direction("east")
-        rotation:set_widget(uzful.layout.build({
-            layout = wibox.layout.align.horizontal,
-            middle = title,
-            left = { layout = wibox.layout.fixed.horizontal,
-                awful.titlebar.widget.iconwidget(c) },
-            right = { layout = wibox.layout.fixed.horizontal,
-                awful.titlebar.widget.stickybutton(c),
-                awful.titlebar.widget.ontopbutton(c),
-                awful.titlebar.widget.maximizedbutton(c),
-                awful.titlebar.widget.floatingbutton(c),
-                awful.titlebar.widget.closebutton(c) }
-        }))
+        rotation:set_widget(layout)
         awful.titlebar(c, {
             size = theme.menu_height,
-            position = "left"
+            position = "left",
         }):set_widget(rotation)
     end
 
-    if not startup then
+
+    if not awesome.startup then
         -- Set the windows at the slave,
         -- i.e. put it at the end of others instead of setting it master.
         -- awful.client.setslave(c)
@@ -1132,6 +1129,14 @@ client.connect_signal("manage", function (c, startup)
             awful.placement.no_overlap(c)
             awful.placement.no_offscreen(c)
         end
+    end
+end)
+
+-- Enable sloppy focus
+client.connect_signal("mouse::enter", function(c)
+    if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+        and awful.client.focus.filter(c) then
+        client.focus = c
     end
 end)
 
