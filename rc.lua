@@ -12,6 +12,7 @@ beautiful = require("beautiful")
 naughty = require("naughty")
 menubar = require("menubar")
 keydoc = require("keydoc")
+repl = require("uzful.widget.repl")
 
 
 
@@ -830,7 +831,7 @@ mytasklist.buttons = awful.util.table.join(
 
 for s = 1, screen.count() do
     -- Create a promptbox for each screen
-    mypromptbox[s] = awful.widget.prompt()
+    mypromptbox[s] = awful.widget.prompt({ prompt = "$ " })
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
     mylayoutbox[s] = awful.widget.layoutbox(s)
@@ -1031,9 +1032,10 @@ globalkeys = awful.util.table.join(
     -- Prompt
     awful.key({ modkey,           }, "r",     function () mypromptbox[mouse.screen]:run() end, "prompt"),
     awful.key({ modkey, "Shift"   }, "r",     function () menubar.show(mouse.screen) end, "menubar"),
+    awful.key({ modkey, "Shift"   }, "x",     function () repl.show(mouse.screen) end, "repl"),
     awful.key({ modkey }, "x",
               function ()
-                  awful.prompt.run({ prompt = "Run Lua code: " },
+                  awful.prompt.run({ prompt = "> " },
                   mypromptbox[mouse.screen].widget,
                   awful.util.eval, nil,
                   awful.util.getdir("cache") .. "/history_eval")

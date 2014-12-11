@@ -10,11 +10,11 @@ theme = {}
 theme.font          = "uni 05_53 6"
 theme.icon_theme    = "default.kde4"
 
-theme.bg_normal     = "#00000000"
-theme.bg_systray    = "#00000000"
+theme.bg_normal     = "#00000022"
+theme.bg_systray    = "#00000022"
 theme.bg_focus      = "#282828D8"--"#222222" * 85%
 theme.bg_urgent     = "#ff0000"
-theme.bg_minimize   = "#11111100"
+theme.bg_minimize   = "#11111122"
 
 theme.fg_normal     = "#aaaaaa"
 theme.fg_focus      = "#ffffff"
@@ -104,6 +104,7 @@ theme.wallpapers = {
     {"/home/dodo/Pictures/minimalcluster1900x1080.png", center = true},
     {"/home/dodo/Pictures/minimalblueprint1900x1080.png", center = true},
     {"/home/dodo/Pictures/blue_print_desktop_1600x1200_tranformed.jpg", maximize=true},
+    {"/home/dodo/Pictures/161502-strutingcolours.jpg", maximize=true},
     {"/home/dodo/Pictures/meh.ro9016.png", center = true},
     "/home/dodo/Pictures/into_the_woods_1280x800.jpg",
     "/home/dodo/Pictures/planetoid_3_1280x800.png",
