@@ -57,6 +57,8 @@ theme.wicd.wireless   = dir .. "wicd/wireless.png"
 theme.wicd.suspended  = dir .. "wicd/suspended.png"
 theme.wicd.connecting = dir .. "wicd/connecting.png"
 theme.wicd.not_connected = dir .. "wicd/not_connected.png"
+theme.phone = {}
+theme.phone.battery = dir .. "phone/battery.png"
 
 -- Variables set for theming the menu:
 -- menu_[bg|fg]_[normal|focus]

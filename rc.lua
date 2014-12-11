@@ -380,11 +380,10 @@ local battery_online = (uzful.util.scan.sysfs({
 
 mybat = uzful.widget.progressimage({
     image = battery_online and (dock_online and theme.dock or theme.battery) or theme.nobattery,
-    draw_image_first = not power_supply_online,
     x = 3, y = 4, width = 3, height = 7 })
 uzful.widget.set_properties(mybat.progress, {
     ticks = true, ticks_gap = 1,  ticks_size = 1,
-    vertical = true, background_color = "#000000",
+    vertical = true, background_color = power_supply_online and "#6E9931" or "#000000",
     border_color = nil, color = "#FFFFFF" })
 vicious.register(mybat.progress, vicious.widgets.bat, "$2", 60, "BAT0")
 
@@ -392,21 +391,21 @@ htimer = uzful.util.listen.sysfs({ subsystem = "power_supply", timer = htimer },
                                  function (device, props)
     if props.action == "change" and props.power_supply_name == "AC" then
         if props.power_supply_online == "0" then
-            mybat.draw_image_first()
+            mybat.progress:set_background_color("#000000")
             power_supply_online = false
         else
-            mybat.draw_progress_first()
+            mybat.progress:set_background_color("#6E9931")
             power_supply_online = true
         end
     elseif props.power_supply_name == "BAT0" then
         if props.action == "remove" then
-            mybat.draw_progress_first()
+            mybat.progress:set_background_color("#00000000")
             mybat.progress:set_value(nil)
             mybat:set_image(theme.nobattery)
             battery_online = false
         elseif props.action == "add" then
             if not power_supply_online then
-                mybat.draw_image_first()
+                mybat.progress:set_background_color("#6E9931")
             end
             mybat:set_image(dock_online and theme.dock or theme.battery)
             vicious.force({mybat.progress, mybtxt})
@@ -468,6 +467,59 @@ mycritbat = uzful.util.threshold(0.2,
         mycritbat_old_val = val
     end)
 vicious.register(mycritbat, vicious.widgets.bat, "$2", 60, "BAT0")
+
+
+myphonebat = nil
+myphonebtxt = nil
+if dbus then
+    local mynotiphonebat, mycritphonebat_old_val = nil, 0
+    mycritphonebat = uzful.util.threshold(0.14,
+    function (val)
+        mycritphonebat_old_val = val
+        myphonebat.progress:set_background_color("#000000")
+        if mynotiphonebat ~= nil then  naughty.destroy(mynotiphonebat)  end
+    end,
+    function (val)
+        if not battery_online then
+            mybat.progress:set_background_color("#000000")
+            if mynotiphonebat ~= nil then  naughty.destroy(mynotiphonebat)  end
+            return
+        end
+        myphonebat.progress:set_background_color("#8C0000")
+        if val < 0.07 and val <= mycritphonebat_old_val then
+            if mynotiphonebat ~= nil then  naughty.destroy(mynotiphonebat)  end
+            mynotiphonebat = naughty.notify({
+                preset = naughty.config.presets.critical,
+                title = "Critical Phone Battery Charge",
+                text =  "only " .. (val*100) .. "% remaining."})
+        end
+        mycritphonebat_old_val = val
+    end)
+    -- Battery Text
+    myphonebtxt = wibox.widget.textbox()
+    myphonebtxt:set_font("ProggyTinyTT 12")
+    myphonebtxt:set_text("?")
+    -- phone status via kdeconnect
+    myphonebat = uzful.widget.progressimage({
+        image = theme.phone.battery,
+        x = 3, y = 5, width = 2, height = 5 })
+    uzful.widget.set_properties(myphonebat.progress, {
+        ticks = true, ticks_gap = 1,  ticks_size = 1,
+        vertical = true, background_color = "#000000",
+        border_color = nil, color = "#FFFFFF" })
+--     vicious.register(mybat.progress, vicious.widgets.bat, "$2", 60, "BAT0")
+    -- TODO show info if charging or not
+    -- TODO filter for device id
+    dbus.connect_signal('org.kde.kdeconnect.device.battery', function (ev, charge)
+        local percentage = (charge or 0) / 100
+        myphonebat.progress:set_value(percentage)
+        mycritphonebat:set_value(percentage)
+        myphonebtxt:set_text((charge or 0) .. "%")
+    end)
+    dbus.add_match("session", "type='signal',"
+        .. "interface='org.kde.kdeconnect.device.battery',"
+        .. "member='chargeChanged'")
+end
 
 -- Network Progressbar
 mynet = nil
@@ -602,6 +654,7 @@ end
 -- infoboxes funs
 
 myinfobox = { net = {}, cpu = {}, cal = {}, bat = {}, mem = {}, temp = {}, wifi = {} }
+myinfobox.phone = { bat = {} }
 
 myinfobox.net = uzful.widget.infobox({
         position = "top", align = "right",
@@ -632,6 +685,12 @@ myinfobox.mem = uzful.widget.infobox({
         size = function () return mymtxt:fit(-1, -1) end,
         position = "top", align = "right",
         widget = mymtxt })
+if myphonebtxt then
+    myinfobox.phone.bat = uzful.widget.infobox({
+            size = function () return myphonebtxt:fit(-1, -1) end,
+            position = "top", align = "right",
+            widget = myphonebtxt })
+end
 if mynettxt then
     myinfobox.wifi = uzful.widget.infobox({
             size = function () return mynettxt:fit(-1, -1) end,
@@ -683,6 +742,13 @@ if mynet then
     end)
 end
 
+if myphonebat then
+    myphonebat:connect_signal("mouse::enter", function ()
+        myinfobox.phone.bat:update()
+        myinfobox.phone.bat:show()
+    end)
+end
+
 mynetgraphs.small.layout:connect_signal("mouse::leave", myinfobox.net.hide)
 mycpugraphs.small.layout:connect_signal("mouse::leave", myinfobox.cpu.hide)
 mytextclock:connect_signal("mouse::leave", myinfobox.cal.hide)
@@ -691,6 +757,9 @@ mybat:connect_signal("mouse::leave", myinfobox.bat.hide)
 mymem:connect_signal("mouse::leave", myinfobox.mem.hide)
 if mynet then
     mynet:connect_signal("mouse::leave", myinfobox.wifi.hide)
+end
+if myphonebat then
+    myphonebat:connect_signal("mouse::leave", myinfobox.phone.bat.hide)
 end
 
 
@@ -810,6 +879,7 @@ for s = 1, screen.count() do
             mytemp,
             mytextclock,
             mynet,
+            myphonebat,
             mybat,
             mymem,
             mylayoutbox[s] }
