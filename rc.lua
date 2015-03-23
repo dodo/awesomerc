@@ -1,4 +1,4 @@
-jit.on()
+if jit then jit.on() end
  -- Standard awesome library
 gears = require("gears")
 awful = require("awful")
@@ -253,6 +253,16 @@ myawesomemenu = {
    { "system", mysystemmenu },
    { "second screen", myscreensmenu },
    { "wallpapers", uzful.menu.wallpaper.menu(theme.wallpapers)},
+   { "layouts", function ()
+        local g = screen[mouse.screen].geometry
+        mylayoutmenu:toggle({
+            coords = {
+                x = g.x + g.width,
+                y = g.y,
+            },
+            keygrabber = true,
+        })
+   end },
    { menu_taglist_text(), function (m)
         taglist_filter.next()
         m.label:set_text(menu_taglist_text())
@@ -1117,10 +1127,10 @@ globalkeys = awful.util.table.join(globalkeys,
     awful.key({ modkey, "Control" }, "n", function () awful.client.restore() end, "restore minimized"))
 
 
--- Compute the maximum number of digit we need, limited to 9
+-- Compute the maximum number of digit we need
 keynumber = 0
 for s = 1, screen.count() do
-    keynumber = math.min(20, math.max(#tags[s], keynumber))
+    keynumber = math.max(keynumber, #tags[s])
 
     globalkeys = awful.util.table.join(globalkeys,
         awful.key({ modkey }, "F" .. s,
@@ -1193,6 +1203,10 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "mpv" },
       properties = { floating = true } },
+    { rule = { class = "qlua" },
+      properties = { floating = true } },
+    { rule = { class = "Qlua" },
+      properties = { floating = true } },
     { rule = { class = "vlc" },
       properties = { floating = true } },
     { rule = { class = "lastfm" },
@@ -1202,6 +1216,8 @@ awful.rules.rules = {
     { rule = { class = "pinentry" },
       properties = { floating = true } },
     { rule = { class = "gimp" },
+      properties = { floating = true } },
+    { rule = { class = "Hamster-time-tracker" },
       properties = { floating = true } },
     -- Set Firefox to always map on tags number 1 of screen 1.
      { rule = { class = "Firefox" },

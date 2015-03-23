@@ -6,5 +6,6 @@ spawn "dbus-send --session --print-reply --dest='org.kde.kded' /kded org.kde.kde
 -- run "unagi" -- http://unagi.mini-dweeb.org/
 -- run "nm-applet"
 -- run "kmix"
+run "akonaditray"
 
 
