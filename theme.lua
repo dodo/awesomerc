@@ -4,10 +4,12 @@
 
 local awful = require("awful")
 local couth = require("couth")
+local naughty = require("naughty")
 
 theme = {}
 
 theme.font          = "uni 05_53 6"
+theme.widget_font   = "ProggyTinyTT" -- no font size here
 theme.icon_theme    = "default.kde4"
 
 theme.bg_normal     = "#00000022"
@@ -25,6 +27,13 @@ theme.border_width  = 0
 theme.border_normal = "#C50B0B"--"#000000"
 theme.border_focus  = "#535d6c"
 theme.border_marked = "#91231c"
+
+
+-- default values for notifications
+naughty.config.defaults.font = "uni 05_53 6"
+naughty.config.defaults.border_width = "0"
+naughty.config.defaults.bg = "#00000066"
+naughty.config.defaults.opacity = 0.77
 
 
 local dir = awful.util.getdir("config") .. "/theme/"

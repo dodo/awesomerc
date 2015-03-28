@@ -1,4 +1,4 @@
-if jit then jit.on() end
+require 'fixes'
  -- Standard awesome library
 gears = require("gears")
 awful = require("awful")
@@ -12,56 +12,6 @@ beautiful = require("beautiful")
 naughty = require("naughty")
 menubar = require("menubar")
 keydoc = require("keydoc")
-repl = require("uzful.widget.repl")
-
-
-awful.client.movetoscreen = function (c, s)
-    local _screen = require("awful.screen")
-    local sel = c or client.focus
-    if sel then
-        local sc = screen.count()
-        if not s then
-            s = sel.screen + 1
-        end
-        if s > sc then s = 1 elseif s < 1 then s = sc end
-        sel.screen = s
-        _screen.focus(s)
-        if sel.screen ~= s then sel.screen = s end
-    end
-end
-
-
--- default values for notifications
-naughty.config.defaults.font = "uni 05_53 6"
-naughty.config.defaults.border_width = "0"
-naughty.config.defaults.bg = "#00000066"
-naughty.config.defaults.opacity = 0.77
-
-
--- {{{ Error handling
--- Check if awesome encountered an error during startup and fell back to
--- another config (This code will only ever execute for the fallback config)
-if awesome.startup_errors then
-    naughty.notify({ preset = naughty.config.presets.critical,
-                     title = "Oops, there were errors during startup!",
-                     text = awesome.startup_errors })
-end
-
--- Handle runtime errors after startup
-do
-    local in_error = false
-    awesome.connect_signal("debug::error", function (err)
-        -- Make sure we don't go into an endless error loop
-        if in_error then return end
-        in_error = true
-
-        naughty.notify({ preset = naughty.config.presets.critical,
-                         title = "Oops, an error happened!",
-                         text = err })
-        in_error = false
-    end)
-end
--- }}}
 
 -- Widget library
 vicious = require("vicious")
@@ -87,17 +37,30 @@ couth.CONFIG.ALSA_CONTROLS = {
 }
 require("backlight") -- uses couch too
 
+myscreensmenu = uzful.menu.xrandr({
+        -- order
+        "LVDS1", "HDMI1", "VGA1",
+        -- names
+        LVDS1 = "Local",
+        HDMI1 = "DP++",
+        VGA1  = "VGA",
+})
+SCREEN = myscreensmenu.const()
+
+
+rc = { conf = require("conf") }
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
 beautiful.init(awful.util.getdir("config") .. "/theme.lua")
+uzful.notifications.debug()
 uzful.notifications.patch()
 uzful.util.patch.vicious()
 
 menubar.cache_entries = true
 menubar.show_categories = true   -- Change to false if you want only programs to appear in the menu
 menubar.geometry.height = theme.menu_height
-repl.geometry.height = theme.menu_height
+uzful.widget.repl.geometry.height = theme.menu_height
 
 -- vicious caching
 vicious.cache(vicious.widgets.thermal)
@@ -109,7 +72,7 @@ editor = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
 
 freedesktop.utils.terminal = terminal
-freedesktop.utils.icon_theme = 'default.kde4'
+freedesktop.utils.icon_theme = theme.icon_theme
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -136,8 +99,6 @@ awful.layout.layouts = {
     awful.layout.suit.magnifier
 }
 
-SCREEN = {LVDS1=1,HDMI1=1,VGA1=1}
-
 -- }}}
 
 -- {{{ Wallpaper
@@ -151,88 +112,28 @@ end
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
 tags = {}
-tags_numbered = false
 tag_names = {"☼", "✪", "⌥", "✇", "⌤", "⍜", "⌬", "♾", "⌘", "⚗", "Ω", "·"}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
     tags[s] = awful.tag(tag_names, s, awful.layout.layouts[12])
 end
 
-myrestorelist = uzful.restore()
+myrestorelist = nil
+if rc.conf.restore then
+    myrestorelist = uzful.restore()
+end
 -- }}}
 
 -- {{{ Menu
 -- Create a laucher widget and a main menu
 
-myextscreen = "HDMI1"
-
 detailed_graphs = uzful.menu.toggle_widgets()
-
-taglist_filter = uzful.util.functionlist({
-    awful.widget.taglist.filter.noempty,
-    awful.widget.taglist.filter.all })
-
-local menu_graph_text = function ()
-    return (detailed_graphs.visible() and "disable" or "enable") .. " graphs"
-end
-
-local menu_tags_text = function ()
-    return (tags_numbered and "symbol" or "number") .. " tags"
-end
-
-local menu_screen_text = function ()
-    return ({
-        LVDS1 = "Local",
-        VGA1  = "VGA",
-        HDMI1 = "DP++",
-    })[myextscreen]
-end
-
-local menu_taglist_text = function ()
-    if taglist_filter.current() == 1 then
-        return "show all tags"
-    elseif taglist_filter.current() == 2 then
-        return "hide empty tags"
-    else
-        return "nil"
-    end
-end
+if not rc.conf.graphs then detailed_graphs.toggle() end
 
 myfreedesktopmenu = freedesktop.menu.new()
 
-myscreensmenu = {
-    { "same-as",
-        "xrandr --output LVDS1 --auto --output "..myextscreen.." --auto --same-as  LVDS1",
-        beautiful.screens_sameas },
-    { "left-of",
-        "xrandr --output LVDS1 --auto --output "..myextscreen.." --auto --left-of  LVDS1",
-        beautiful.screens_leftof },
-    { "right-of",
-        "xrandr --output LVDS1 --auto --output "..myextscreen.." --auto --right-of LVDS1",
-        beautiful.screens_rightof },
-    { "above",
-        "xrandr --output LVDS1 --auto --output "..myextscreen.." --auto --above    LVDS1",
-        beautiful.screens_above },
-    { "below",
-        "xrandr --output LVDS1 --auto --output "..myextscreen.." --auto --below    LVDS1",
-        beautiful.screens_below },
-    { menu_screen_text(), function (m, menu)
-        local prev = myextscreen
-        myextscreen = (myextscreen == "HDMI1" and "VGA1" or "HDMI1")
-        m.label:set_text(menu_screen_text())
-        for _, item in ipairs(menu.items) do
-            if type(item.cmd) == 'string' then
-                item.cmd = string.gsub(item.cmd, prev, myextscreen)
-            end
-        end
-        return true
-    end },
-}
-if screen.count() > 1 then
-    table.insert(myscreensmenu, 1, { "off",
-        "xrandr --output LVDS1 --auto --output "..myextscreen.." --off",
-        beautiful.screens_off })
-end
+mylayoutmenu = uzful.menu.layouts(awful.layout.layouts, { align = "right", width = 60 })
+mylayoutmenu:add({ "actions", uzful.menu.tag_info({ theme = { width = 150 } }) })
 
 mysystemmenu = {}
 unagi         = function () awful.util.spawn_with_shell("unagi")             end
@@ -242,47 +143,43 @@ invert_screen = function () awful.util.spawn("xcalib -invert -alter", false) end
 table.insert(mysystemmenu, { "invert screen", invert_screen })
 table.insert(mysystemmenu, { "screenshot", screenshot })
 table.insert(mysystemmenu, { "lock", lock })
-if dbus then
+if rc.conf.dbus then
     table.insert(mysystemmenu, { "suspend", function ()
         naughty.notify({ text = "system suspsending  ... " })
         awful.util.spawn_with_shell("sync && dbus-send --system --print-reply --dest='org.freedesktop.UPower' /org/freedesktop/UPower org.freedesktop.UPower.Suspend & xtrlock")
     end })
 end
 
+taglist_filter = uzful.util.functionlist({
+    awful.widget.taglist.filter.noempty,
+    awful.widget.taglist.filter.all })
+if rc.conf.taglist == 'all' then taglist_filter.next() end
+
 myawesomemenu = {
    { "system", mysystemmenu },
    { "second screen", myscreensmenu },
    { "wallpapers", uzful.menu.wallpaper.menu(theme.wallpapers)},
-   { "layouts", function ()
-        local g = screen[mouse.screen].geometry
-        mylayoutmenu:toggle({
-            coords = {
-                x = g.x + g.width,
-                y = g.y,
-            },
-            keygrabber = true,
-        })
-   end },
-   { menu_taglist_text(), function (m)
-        taglist_filter.next()
-        m.label:set_text(menu_taglist_text())
-        for s = 1, screen.count() do
-            tags[s][1].name = tags[s][1].name
-        end
-   end },
-   { menu_tags_text(), function (m)
-        tags_numbered = not tags_numbered
-        for s = 1, screen.count() do
-            for i, t in ipairs(tags[s]) do
-                t.name = tags_numbered and tostring(i) or tag_names[i]
-            end
-        end
-        m.label:set_text(menu_tags_text())
-     end },
-   { menu_graph_text(), function (m)
-        detailed_graphs.toggle()
-        m.label:set_text(menu_graph_text())
-     end },
+   { "layouts", mylayoutmenu.menu_switch },
+   uzful.menu.switch.filter({
+       filter = taglist_filter,
+       labels = {
+           "show all tags",
+           "hide empty tags",
+       },
+   }),
+   uzful.menu.switch.numbered_tag_names(tags, {
+       numbered = (rc.conf.tags == 'number'),
+       names = tag_names,
+       label = { named = "symbol" },
+   }),
+   uzful.menu.switch.toggle({
+       test  = detailed_graphs.visible,
+       toggle = detailed_graphs.toggle,
+       labels = {
+           [true]  = "disable graphs",
+           [false] = "enable graphs",
+       },
+   }),
    { "manual", terminal .. " -e man awesome" },
    { "edit config", editor_cmd .. " " .. awful.util.getdir("config") .. "/rc.lua" },
    { "keybindings", keydoc.display },
@@ -290,548 +187,268 @@ myawesomemenu = {
    { "quit", awesome.quit },
 }
 
-function lol(m)
-      m.pups = not m.pups
-      if m.pups then
-        m.theme.bg_focus = "#FFFF00"
-      else
-        m.theme.bg_focus = "#0000FF"
-      end
-      m.theme.bg_normal = m.theme.bg_focus
-      m._background:set_bg(m.theme.bg_focus)
-      naughty.notify({
-          text = m.label._layout.text .. " is " .. (m.pups and "on" or "off"),
---           preset = naughty.config.presets.critical,
-          bg = m.theme.bg_focus,
-      })
-      return true
-    end
 mymainmenu = awful.menu({ max = 100,
---     { "test", {
---       {"A",lol},
---       {"B",lol},
---       {"C",lol},
---       {"D",lol},
---       {"E",lol},
---       {"F",lol},
---       {"G",lol},
---       {"R",lol},
---       {"Z", lol}
---     }},
     { "awesome", myawesomemenu, beautiful.awesome_icon },
     { "Menu", myfreedesktopmenu, freedesktop.utils.lookup_icon({ icon = 'kde' }) },
     { "Debian", debian.menu.Debian_menu.Debian, freedesktop.utils.lookup_icon({ icon = 'debian-logo' }) },
     { "open terminal", terminal, freedesktop.utils.lookup_icon({ icon = 'terminal' }) },
                         })
 
-local syslog_enabled = uzful.util.module.exists('inotify') and uzful.util.module.exists('socket')
-if syslog_enabled then
-        -- luarocks install inotify INOTIFY_INCDIR=/usr/include/x86_64-linux-gnu
-    local lognotify = require("lognotify")
-    ilog = lognotify{ logs = {
+if rc.conf.syslog then
+    -- luarocks install inotify INOTIFY_INCDIR=/usr/include/x86_64-linux-gnu
+    mysyslog = uzful.widget.syslog({
+        screen = SCREEN.LVDS1, lines = 64,
+        logs = {
             syslog = { file = "/var/log/syslog" },
 --             xsessionerrors = { file = "/home/dodo/.xsession-errors" },
         },
-        interval = 0.1,
-    }
-    local sllines = 64
-    local text = ""
-
-    mysyslogtext = wibox.widget.textbox()
-    mysyslogtext:set_valign('bottom')
-    mysyslogtext:set_text(" \n")
-
-    ilog.notify = function (self, name, file, diff)
-        text = string.format("%s\n%s", text, diff)
-        text = utilz.lineswrap(text, sllines)
-        mysyslogtext:set_text(text)
-    end
-    ilog:start()
-
-    local s = SCREEN.LVDS1
-    mysyslog = uzful.widget.infobox({ screen = s,
-        width = screen[s].geometry.width,
-        height = sllines * beautiful.get_font_height(theme.font),
-        position = "bottom", align = "left",
-        visible = true, ontop = false,
-        widget = mysyslogtext })
+    })
 end
 
--- mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
---                                      menu = mymainmenu })
+mylauncher = nil
+if rc.conf.launcher then
+    mylauncher = awful.widget.launcher({
+        image = beautiful.awesome_icon,
+        menu = mymainmenu,
+    })
+end
 -- }}}
 
 -- {{{ Wibox
 -- Create a textclock widget
-mytextclock = awful.widget.textclock(' %H:%M ')
-mytextclock:set_font("sans 5")
-mycal = uzful.widget.calendar({ font = 7,
-    head = '<span color="#666666">$1</span>',
-    week = '<span color="#999999">$1</span>',
-    day  = '<span color="#BBBBBB">$1</span>',
-    number  = '<span color="#EEEEEE">$1</span>',
-    current = '<span color="green">$1</span>',
-})
+mytextclock = nil
+if rc.conf.clock then
+    mytextclock = awful.widget.textclock(' %H:%M ')
+    mytextclock:set_font("sans 5")
+end
 
-mytextclock:buttons(awful.util.table.join(
-    awful.button({         }, 1, function()  mycal:switch_month(-1)  end),
-    awful.button({         }, 2, function()  mycal:now()             end),
-    awful.button({         }, 3, function()  mycal:switch_month( 1)  end),
-    awful.button({         }, 4, function()  mycal:switch_month(-1)  end),
-    awful.button({         }, 5, function()  mycal:switch_month( 1)  end),
-    awful.button({ 'Shift' }, 1, function()  mycal:switch_year(-1)  end),
-    awful.button({ 'Shift' }, 2, function()  mycal:now()             end),
-    awful.button({ 'Shift' }, 3, function()  mycal:switch_year( 1)  end),
-    awful.button({ 'Shift' }, 4, function()  mycal:switch_year(-1)  end),
-    awful.button({ 'Shift' }, 5, function()  mycal:switch_year( 1)  end)
-))
+mycal = nil
+if rc.conf.clock and rc.conf.calendar then
+    mycal = uzful.widget.calendar({ font = 7,
+        head = '<span color="#666666">$1</span>',
+        week = '<span color="#999999">$1</span>',
+        day  = '<span color="#BBBBBB">$1</span>',
+        number  = '<span color="#EEEEEE">$1</span>',
+        current = '<span color="green">$1</span>',
+    })
+    mytextclock:buttons(awful.util.table.join(
+        awful.button({         }, 1, function()  mycal:switch_month(-1)  end),
+        awful.button({         }, 2, function()  mycal:now()             end),
+        awful.button({         }, 3, function()  mycal:switch_month( 1)  end),
+        awful.button({         }, 4, function()  mycal:switch_month(-1)  end),
+        awful.button({         }, 5, function()  mycal:switch_month( 1)  end),
+        awful.button({ 'Shift' }, 1, function()  mycal:switch_year(-1)  end),
+        awful.button({ 'Shift' }, 2, function()  mycal:now()             end),
+        awful.button({ 'Shift' }, 3, function()  mycal:switch_year( 1)  end),
+        awful.button({ 'Shift' }, 4, function()  mycal:switch_year(-1)  end),
+        awful.button({ 'Shift' }, 5, function()  mycal:switch_year( 1)  end)
+    ))
+end
 
 -- Memory Progressbar
-mymem = uzful.widget.progressimage({
-    x = 2, y = 2, width = 5, height = 10,
-    image = theme.memory, draw_image_first = false })
-uzful.widget.set_properties(mymem.progress, {
-    vertical = true, background_color = "#000000",
-    border_color = nil, color = "#0173FF" })
---mymem:set_color({ "#001D40", "#535d6c", "#0173FF" })
-vicious.register(mymem.progress, vicious.widgets.mem, "$1", 4)
+mymem = nil
+if rc.conf.memory then
+    mymem = uzful.widget.progressimage({
+        x = 2, y = 2, width = 5, height = 10,
+        image = theme.memory, draw_image_first = false })
+    uzful.widget.set_properties(mymem.progress, {
+        vertical = true, background_color = "#000000",
+        border_color = nil, color = "#0173FF" })
+    --mymem:set_color({ "#001D40", "#535d6c", "#0173FF" })
+    vicious.register(mymem.progress, vicious.widgets.mem, "$1", 4)
+    -- Memory Text
+    mymem.text = wibox.widget.textbox()
+    mymem.text:set_font(theme.widget_font .. " 12")
+    vicious.register(mymem.text, vicious.widgets.mem,
+        '$4mb free, $1%', 60)
+end
 
 -- Battery Progressbar
-local htimer = nil
-local dock_online = ((uzful.util.scan.sysfs({
-    property = {"modalias", "platform:dock"},
-    sysattr = {"type", "dock_station"},
-    subsystem = "platform",
-}).sysattrs[1] or {}).docked == "1")
-local power_supply_online = ((uzful.util.scan.sysfs({
-    property = {"power_supply_name", "AC"},
-    subsystem = "power_supply",
-}).properties[1] or {}).power_supply_online == "1")
-local battery_online = (uzful.util.scan.sysfs({
-    property = {"power_supply_name", "BAT0"},
-    subsystem = "power_supply"}).length > 0)
+mybattery = nil
+if rc.conf.sysfs and rc.conf.battery then
+    mybattery = uzful.widget.battery({
+        bat = 'BAT0', ac = 'AC',
+        x = 3, y = 4, width = 3, height = 7, -- matching theme/battery.png
+        theme = theme, font = theme.widget_font .. " 12",
+    })
+end
 
-mybat = uzful.widget.progressimage({
-    image = battery_online and (dock_online and theme.dock or theme.battery) or theme.nobattery,
-    x = 3, y = 4, width = 3, height = 7 })
-uzful.widget.set_properties(mybat.progress, {
-    ticks = true, ticks_gap = 1,  ticks_size = 1,
-    vertical = true, background_color = power_supply_online and "#6E9931" or "#000000",
-    border_color = nil, color = "#FFFFFF" })
-vicious.register(mybat.progress, vicious.widgets.bat, "$2", 60, "BAT0")
 
-htimer = uzful.util.listen.sysfs({ subsystem = "power_supply", timer = htimer },
-                                 function (device, props)
-    if props.action == "change" and props.power_supply_name == "AC" then
-        if props.power_supply_online == "0" then
-            mybat.progress:set_background_color("#000000")
-            power_supply_online = false
-        else
-            mybat.progress:set_background_color("#6E9931")
-            power_supply_online = true
+if rc.conf.sysfs and rc.conf.monitor then
+    -- reuse mybattery.timer here
+    local bat = mybattery or {}
+    bat.timer = uzful.util.listen.sysfs({ subsystem = "drm", timer = bat.timer },
+                                    function (device, props)
+        if props.action == "change" and props.devtype == "drm_minor" and screen.count() > 1 then
+            naughty.notify({
+                timeout = 0,
+                hover_timeout = 0.1,
+                position = "bottom_right",
+                icon = theme.nomonitor })
         end
-    elseif props.power_supply_name == "BAT0" then
-        if props.action == "remove" then
-            mybat.progress:set_background_color("#00000000")
-            mybat.progress:set_value(nil)
-            mybat:set_image(theme.nobattery)
-            battery_online = false
-        elseif props.action == "add" then
-            if not power_supply_online then
-                mybat.progress:set_background_color("#6E9931")
-            end
-            mybat:set_image(dock_online and theme.dock or theme.battery)
-            vicious.force({mybat.progress, mybtxt})
-            battery_online = true
-        end
+    end).timer
+end
+
+
+-- myphoneid = '5608e506aeee6824'
+myphone = nil
+if rc.conf.dbus and rc.conf.phone then
+    myphone = uzful.widget.battery.phone({
+        x = 3, y = 5, width = 2, height = 5, -- matching theme/phone/battery.png
+        theme = theme.phone, font = theme.widget_font .. " 12",
+    })
+end
+
+mytemp = nil
+if rc.conf.temperature then
+    -- Temperature Info
+    mytemp = uzful.widget.temperature({
+        width = 161, height = 42,
+        font = "sans 6",
+    })
+    table.insert(detailed_graphs.widgets, mytemp.graph)
+    vicious.register(mytemp.notifications, vicious.widgets.thermal, "$1", 30, "thermal_zone0")
+    vicious.register(mytemp.graph,         vicious.widgets.thermal, "$1",  4, "thermal_zone0")
+end
+
+-- net usage graphs
+mynetgraphs = nil
+if rc.conf.network then
+    mynetgraphs = uzful.widget.netgraphs({ default = "wlan0",
+        up_fgcolor = "#D0000399", down_fgcolor = "#95D04399",
+        up_mgcolor = "#D0000311", down_mgcolor = "#95D04311",
+        highlight = ' <b>$1</b>', direction = "right",
+        normal    = ' <span color="#666666">$1</span>',
+        big = { width = 161, height = 42, interval = 1, scale = "kb" },
+        small = { width = 23, height = theme.menu_height, interval = 1 } })
+
+    mynetgraphs.update_active()
+    mynetgraphs.update_widget = function ()
+        mynetgraphs.update_active()
+        myinfobox.net.height = mynetgraphs.big.height
+        myinfobox.net:update()
     end
-end).timer
+    mynetgraphs.small.layout:buttons(awful.util.table.join(
+        awful.button({ }, 1, mynetgraphs.toggle),
+        awful.button({ }, 2, mynetgraphs.update_widget),
+        awful.button({ }, 3, mynetgraphs.toggle),
+        awful.button({ }, 4, mynetgraphs.toggle),
+        awful.button({ }, 5, mynetgraphs.toggle)
+    ))
 
-htimer = uzful.util.listen.sysfs({ subsystem = "platform", timer = htimer },
-                                 function (device, props, attrs)
-    if props.action == "change" and
-       props.modalias == "platform:dock" and
-       attrs.type == "dock_station"
-    then
-        if props.event == "undock" then
-            dock_online = false
-        elseif props.event == "dock" then
-            dock_online = true
-        end
-        if battery_online then
-            mybat:set_image(dock_online and theme.dock or theme.battery)
-        end
+    for _, widget in ipairs(mynetgraphs.big.widgets) do
+        table.insert(detailed_graphs.widgets, widget)
     end
-end).timer
-
-
-htimer = uzful.util.listen.sysfs({ subsystem = "drm", timer = htimer },
-                                 function (device, props)
-    if props.action == "change" and props.devtype == "drm_minor" and screen.count() > 1 then
-        naughty.notify({
-            timeout = 0,
-            hover_timeout = 0.1,
-            position = "bottom_right",
-            icon = theme.nomonitor })
-    end
-end).timer
-
-local mynotibat, mycritbat_old_val = nil, 0
-mycritbat = uzful.util.threshold(0.2,
-    function (val)
-        mycritbat_old_val = val
-        mybat.progress:set_background_color("#000000")
-        if mynotibat ~= nil then  naughty.destroy(mynotibat)  end
-    end,
-    function (val)
-        if not battery_online then
-            mybat.progress:set_background_color("#000000")
-            if mynotibat ~= nil then  naughty.destroy(mynotibat)  end
-            return
-        end
-        mybat.progress:set_background_color("#8C0000")
-        if val < 0.1 and val <= mycritbat_old_val then
-            if mynotibat ~= nil then  naughty.destroy(mynotibat)  end
-            mynotibat = naughty.notify({
-                preset = naughty.config.presets.critical,
-                title = "Critical Battery Charge",
-                text =  "only " .. (val*100) .. "% remaining."})
-        end
-        mycritbat_old_val = val
-    end)
-vicious.register(mycritbat, vicious.widgets.bat, "$2", 60, "BAT0")
-
-
-myphonebat = nil
-myphonebtxt = nil
-if dbus then
-    local mynotiphonebat, mycritphonebat_old_val = nil, 0
-    mycritphonebat = uzful.util.threshold(0.14,
-    function (val)
-        mycritphonebat_old_val = val
-        myphonebat.progress:set_background_color("#000000")
-        if mynotiphonebat ~= nil then  naughty.destroy(mynotiphonebat)  end
-    end,
-    function (val)
-        if not battery_online then
-            mybat.progress:set_background_color("#000000")
-            if mynotiphonebat ~= nil then  naughty.destroy(mynotiphonebat)  end
-            return
-        end
-        myphonebat.progress:set_background_color("#8C0000")
-        if val < 0.07 and val <= mycritphonebat_old_val then
-            if mynotiphonebat ~= nil then  naughty.destroy(mynotiphonebat)  end
-            mynotiphonebat = naughty.notify({
-                preset = naughty.config.presets.critical,
-                title = "Critical Phone Battery Charge",
-                text =  "only " .. (val*100) .. "% remaining."})
-        end
-        mycritphonebat_old_val = val
-    end)
-    -- Battery Text
-    myphonebtxt = wibox.widget.textbox()
-    myphonebtxt:set_font("ProggyTinyTT 12")
-    myphonebtxt:set_text("?")
-    -- phone status via kdeconnect
-    myphonebat = uzful.widget.progressimage({
-        image = theme.phone.battery,
-        x = 3, y = 5, width = 2, height = 5 })
-    uzful.widget.set_properties(myphonebat.progress, {
-        ticks = true, ticks_gap = 1,  ticks_size = 1,
-        vertical = true, background_color = "#000000",
-        border_color = nil, color = "#FFFFFF" })
---     vicious.register(mybat.progress, vicious.widgets.bat, "$2", 60, "BAT0")
-    -- TODO show info if charging or not
-    -- TODO filter for device id
-    dbus.connect_signal('org.kde.kdeconnect.device.battery', function (ev, charge)
-        local percentage = (charge or 0) / 100
-        myphonebat.progress:set_value(percentage)
-        mycritphonebat:set_value(percentage)
-        myphonebtxt:set_text((charge or 0) .. "%")
-    end)
-    dbus.add_match("session", "type='signal',"
-        .. "interface='org.kde.kdeconnect.device.battery',"
-        .. "member='chargeChanged'")
 end
 
 -- Network Progressbar
 mynet = nil
-mynettxt = nil
-if dbus then
-    mynet = uzful.widget.progressimage({
-        image = theme.wicd.unknown,
-        draw_image_first = false,
-        x = 1, y = 2, width = 3, height = 9 })
-    uzful.widget.set_properties(mynet.progress, {
-        ticks = true, ticks_gap = 1,  ticks_size = 1,
-        vertical = true, background_color = "#000000",
-        border_color = nil, color = "#33FF3399" })
-    mynettxt = wibox.widget.textbox()
-    mynettxt:set_font("ProggyTinyTT 7")
-    mynettxt:set_text(" ")
-    local connecting = false
-    dbus.connect_signal("org.wicd.daemon", function (ev, status, data)
-        local state = ({
-            "not_connected","connecting","wireless","wired","suspended"
-        })[status + 1] or "unknown"
---         print("changed wicd status to "..state)
-        mynet:set_image(theme.wicd[state])
-        if connecting and (state == "wireless" or state == "wired") then
-            connecting = false
-            mynetgraphs.update_widget()
-        end
-        if state == "wireless" then
-            mynet.progress:set_value((data[3] or 0) / 100)
-        else
-            if state == "connecting" then
-                connecting = true
-                if data[1] == "wireless" then
-                    mynetgraphs.switch("wlan0")
-                elseif data[1] == "wired" then
-                    mynetgraphs.switch("eth0")
-                end
+if rc.conf.dbus and rc.conf.network == 'wicd' then
+    mynet = uzful.widget.wicd({
+        x = 1, y = 2, width = 3, height = 9,
+        theme = theme.wicd, font = theme.widget_font .. " 7",
+        onupdate = mynetgraphs.update_widget,
+        onconnect = function (kind)
+            if kind == "wireless" then
+                mynetgraphs.switch("wlan0")
+            elseif kind == "wired" then
+                mynetgraphs.switch("eth0")
             end
-            mynet.progress:set_value(nil)
-        end
-        local text = ""
-        for _, line in ipairs(data) do text = text .. line .. "\n" end
-        if text == "" or text == "\n" then text = " " end
-        mynettxt:set_text(text)
---         print(require('serpent').block(data))
-    end)
-    dbus.add_match("system",
-             "type='signal',interface='org.wicd.daemon',member='StatusChanged'")
-end
-
--- Memory Text
-mymtxt = wibox.widget.textbox()
-mymtxt:set_font("ProggyTinyTT 12")
-vicious.register(mymtxt, vicious.widgets.mem,
-    '$4mb free, $1%', 60)
-
--- Battery Text
-mybtxt = wibox.widget.textbox()
-mybtxt:set_font("ProggyTinyTT 12")
-vicious.register(mybtxt, vicious.widgets.bat,
-    '$1$3 $2%', 60, "BAT0")
-
--- Temperature Info
-mytemp = wibox.widget.textbox()
-mytemp:set_font("sans 6")
-mycrittemp = uzful.util.threshold(0.8,
-    function (val)
-        mytemp:set_markup('<span color="red">' ..
-            (val*100) .. '°</span>')
-    end,
-    function (val)
-        mytemp:set_markup('<span color="#666666" size="small">' ..
-            (val*100) .. '°</span>')
-    end)
-vicious.register(mycrittemp, vicious.widgets.thermal, "$1", 30, "thermal_zone0")
-
-
-mytempgraph = awful.widget.graph({ width = 161, height = 42 })
-table.insert(detailed_graphs.widgets, mytempgraph)
-uzful.widget.set_properties(mytempgraph, {
-    border_color = nil,
-    color = "#AA0000",
-    background_color = "#000000" })
-vicious.register(mytempgraph, vicious.widgets.thermal, "$1", 4, "thermal_zone0")
-
--- net usage graphs
-
-mynetgraphs = uzful.widget.netgraphs({ default = "wlan0",
-    up_fgcolor = "#D0000399", down_fgcolor = "#95D04399",
-    up_mgcolor = "#D0000311", down_mgcolor = "#95D04311",
-    highlight = ' <b>$1</b>', direction = "right",
-    normal    = ' <span color="#666666">$1</span>',
-    big = { width = 161, height = 42, interval = 2, scale = "kb" },
-    small = { width = 23, height = theme.menu_height, interval = 2 } })
-
-mynetgraphs.update_active()
-mynetgraphs.update_widget = function ()
-    mynetgraphs.update_active()
-    myinfobox.net.height = mynetgraphs.big.height
-    myinfobox.net:update()
-end
-mynetgraphs.small.layout:buttons(awful.util.table.join(
-    awful.button({ }, 1, mynetgraphs.toggle),
-    awful.button({ }, 2, mynetgraphs.update_widget),
-    awful.button({ }, 3, mynetgraphs.toggle),
-    awful.button({ }, 4, mynetgraphs.toggle),
-    awful.button({ }, 5, mynetgraphs.toggle)
-))
-
-for _, widget in ipairs(mynetgraphs.big.widgets) do
-    table.insert(detailed_graphs.widgets, widget)
+        end,
+    })
 end
 
 -- CPU graphs
 
-mycpugraphs = uzful.widget.cpugraphs({
-    fgcolor = "#D0752A", bgcolor = "#000000", direction = "right",
-    load = { interval = 30, font = "ProggyTinyTT 10",
-        text = ' <span color="#666666">$1</span>' ..
-               '  <span color="#9A9A9A">$2</span>' ..
-               '  <span color="#DDDDDD">$3</span>' },
-    big = { width = 161, height = 42, interval = 2, direction = "left" },
-    small = { width = 42, height = theme.menu_height, interval = 2 } })
+if rc.conf.cpu then
+    mycpugraphs = uzful.widget.cpugraphs({
+        fgcolor = "#D0752A", bgcolor = "#000000", direction = "right",
+        load = { interval = 30, font = theme.widget_font .. " 10",
+            text = ' <span color="#666666">$1</span>' ..
+                '  <span color="#9A9A9A">$2</span>' ..
+                '  <span color="#DDDDDD">$3</span>' },
+        big = { width = 161, height = 42, interval = 1, direction = "left" },
+        small = { width = 42, height = theme.menu_height, interval = 1 } })
 
-table.insert(detailed_graphs.widgets, mycpugraphs.load)
-for _, widget in ipairs(mycpugraphs.big.widgets) do
-    table.insert(detailed_graphs.widgets, widget)
+    table.insert(detailed_graphs.widgets, mycpugraphs.load)
+    for _, widget in ipairs(mycpugraphs.big.widgets) do
+        table.insert(detailed_graphs.widgets, widget)
+    end
 end
 
 
 
 -- infoboxes funs
-
 myinfobox = { net = {}, cpu = {}, cal = {}, bat = {}, mem = {}, temp = {}, wifi = {} }
 myinfobox.phone = { bat = {} }
 
-myinfobox.net = uzful.widget.infobox({
-        position = "top", align = "right",
-        widget = mynetgraphs.big.layout,
-        height = mynetgraphs.big.height,
-        width = mynetgraphs.big.width })
-myinfobox.cpu = uzful.widget.infobox({
-        position = "top", align = "right",
-        widget = mycpugraphs.big.layout,
-        height = mycpugraphs.big.height,
-        width = mycpugraphs.big.width })
-myinfobox.temp = uzful.widget.infobox({
-        size = function () return mytempgraph:fit(-1, -1) end,
-        position = "top", align = "right",
-        widget = uzful.layout.build({
-                widget = mytempgraph,
-                reflection = { vertical = true },
-                layout = wibox.layout.mirror }) })
-myinfobox.cal = uzful.widget.infobox({
-        size = function () return mycal.width,mycal.height end,
-        position = "top", align = "right",
-        widget = mycal.widget })
-myinfobox.bat = uzful.widget.infobox({
-        size = function () return mybtxt:fit(-1, -1) end,
-        position = "top", align = "right",
-        widget = mybtxt })
-myinfobox.mem = uzful.widget.infobox({
-        size = function () return mymtxt:fit(-1, -1) end,
-        position = "top", align = "right",
-        widget = mymtxt })
-if myphonebtxt then
+if mynetgraphs then
+    myinfobox.net = uzful.widget.infobox({
+            position = "top", align = "right",
+            widget = mynetgraphs.big.layout,
+            height = mynetgraphs.big.height,
+            width = mynetgraphs.big.width })
+end
+if mycpugraphs then
+    myinfobox.cpu = uzful.widget.infobox({
+            position = "top", align = "right",
+            widget = mycpugraphs.big.layout,
+            height = mycpugraphs.big.height,
+            width = mycpugraphs.big.width })
+end
+if mytemp then
+    myinfobox.temp = uzful.widget.infobox({
+            size = function () return mytemp.graph:fit(-1, -1) end,
+            position = "top", align = "right",
+            widget = uzful.layout.build({
+                    widget = mytemp.graph,
+                    reflection = { vertical = true },
+                    layout = wibox.layout.mirror }) })
+end
+if mycal then
+    myinfobox.cal = uzful.widget.infobox({
+            size = function () return mycal.width,mycal.height end,
+            position = "top", align = "right",
+            widget = mycal.widget })
+end
+if mybattery then
+    myinfobox.bat = uzful.widget.infobox({
+            size = function () return mybattery.text:fit(-1, -1) end,
+            position = "top", align = "right",
+            widget = mybattery.text })
+end
+if mymem then
+    myinfobox.mem = uzful.widget.infobox({
+            size = function () return mymem.text:fit(-1, -1) end,
+            position = "top", align = "right",
+            widget = mymem.text })
+end
+if myphone then
     myinfobox.phone.bat = uzful.widget.infobox({
-            size = function () return myphonebtxt:fit(-1, -1) end,
+            size = function () return myphone.text:fit(-1, -1) end,
             position = "top", align = "right",
-            widget = myphonebtxt })
+            widget = myphone.text })
 end
-if mynettxt then
+if mynet then
     myinfobox.wifi = uzful.widget.infobox({
-            size = function () return mynettxt:fit(-1, -1) end,
+            size = function () return mynet.text:fit(-1, -1) end,
             position = "top", align = "right",
-            widget = mynettxt })
+            widget = mynet.text })
 end
 
-mynetgraphs.small.layout:connect_signal("mouse::enter", function ()
-    if detailed_graphs.visible() then
-        myinfobox.net:update()
-        myinfobox.net:show()
-    end
-end)
-
-mycpugraphs.small.layout:connect_signal("mouse::enter", function ()
-    if detailed_graphs.visible() then
-        myinfobox.cpu:update()
-        myinfobox.cpu:show()
-    end
-end)
-
-mytemp:connect_signal("mouse::enter", function ()
-    if detailed_graphs.visible() then
-        myinfobox.temp:update()
-        myinfobox.temp:show()
-    end
-end)
-
-mytextclock:connect_signal("mouse::enter", function ()
-    mycal:update()
-    myinfobox.cal:update()
-    myinfobox.cal:show()
-end)
-
-mybat:connect_signal("mouse::enter", function ()
-    myinfobox.bat:update()
-    myinfobox.bat:show()
-end)
-
-mymem:connect_signal("mouse::enter", function ()
-    myinfobox.mem:update()
-    myinfobox.mem:show()
-end)
-
-if mynet then
-    mynet:connect_signal("mouse::enter", function ()
-        myinfobox.wifi:update()
-        myinfobox.wifi:show()
-    end)
+do local _ = utilz.connect_graph_on_mouse_enter -- (widget, box, toggle)
+    if mynetgraphs then _(mynetgraphs.small.layout, myinfobox.net, detailed_graphs) end
+    if mycpugraphs then _(mycpugraphs.small.layout, myinfobox.cpu, detailed_graphs) end
+    if mytemp then _(mytemp.text, myinfobox.temp, detailed_graphs) end
 end
 
-if myphonebat then
-    myphonebat:connect_signal("mouse::enter", function ()
-        myinfobox.phone.bat:update()
-        myinfobox.phone.bat:show()
-    end)
+do local _ = utilz.connect_update_on_mouse_enter -- (widget, box, updatables...)
+    if mycal then _(mytextclock, myinfobox.cal, mycal) end
+    if mymem then _(mymem, myinfobox.mem) end
+    if mynet then _(mynet.widget, myinfobox.wifi) end
+    if myphone then _(myphone.widget, myinfobox.phone.bat) end
+    if mybattery then _(mybattery.widget, myinfobox.bat) end
 end
-
-mynetgraphs.small.layout:connect_signal("mouse::leave", myinfobox.net.hide)
-mycpugraphs.small.layout:connect_signal("mouse::leave", myinfobox.cpu.hide)
-mytextclock:connect_signal("mouse::leave", myinfobox.cal.hide)
-mytemp:connect_signal("mouse::leave", myinfobox.temp.hide)
-mybat:connect_signal("mouse::leave", myinfobox.bat.hide)
-mymem:connect_signal("mouse::leave", myinfobox.mem.hide)
-if mynet then
-    mynet:connect_signal("mouse::leave", myinfobox.wifi.hide)
-end
-if myphonebat then
-    myphonebat:connect_signal("mouse::leave", myinfobox.phone.bat.hide)
-end
-
-
-
-tagstatus = function ()
-    local ncol = awful.tag.getncol()
-    local nmaster = awful.tag.getnmaster()
-    local mwfact = awful.tag.getmwfact() * 100
-    naughty.notify({ text = string.format(
-        "master width factor is now %d%%\nnmaster is now %d\nncol is now %d",
-        mwfact, nmaster, ncol
-    )})
-end
-
-mylayoutmenu = uzful.menu.layouts(awful.layout.layouts, { align = "right", width = 60 })
-mylayoutmenu:add({
-    "actions", { theme = { width = 150 },
-        { "status", tagstatus },
-        { "invert master width factor", function ()
-            awful.tag.setmwfact(1 - awful.tag.getmwfact())
-            naughty.notify({ text = string.format(
-                "master width factor is now %d%%", awful.tag.getmwfact() * 100
-            )})
-        end },
-        { "swap column master", function ()
-            local ncol = awful.tag.getncol()
-            local nmaster = awful.tag.getnmaster()
-            awful.tag.setnmaster(ncol)
-            awful.tag.setncol(nmaster)
-            naughty.notify({ text = string.format(
-                "nmaster is now %d\nncol is now %d", nmaster, ncol
-            )})
-        end },
-        { "reset", function ()
-            uzful.layout.reset()
-            tagstatus()
-        end },
-    },
-})
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -840,55 +457,56 @@ mypromptbox = {}
 mylayoutbox = {}
 mytaglist = {}
 mytaglist.buttons = awful.util.table.join(
-                    awful.button({ }, 1, awful.tag.viewonly),
-                    awful.button({ modkey }, 1, awful.client.movetotag),
-                    awful.button({ }, 3, awful.tag.viewtoggle),
-                    awful.button({ modkey }, 3, awful.client.toggletag),
-                    awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
-                    awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
-                    )
+    awful.button({ }, 1, awful.tag.viewonly),
+    awful.button({ modkey }, 1, awful.client.movetotag),
+    awful.button({ }, 3, awful.tag.viewtoggle),
+    awful.button({ modkey }, 3, awful.client.toggletag),
+    awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
+    awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
+)
 mytasklist = {}
 mytasklist.buttons = awful.util.table.join(
-                     awful.button({ }, 1, function (c)
-                                              if c == client.focus then
-                                                  c.minimized = true
-                                              else
-                                                  c.minimized = false
-                                                  if not c:isvisible() then
-                                                      awful.tag.viewonly(c:tags()[1])
-                                                  end
-                                                  client.focus = c
-                                                  c:raise()
-                                              end
-                                          end),
-                     awful.button({ }, 2, function ()
-                                              if instance then
-                                                  instance:hide()
-                                                  instance = nil
-                                              else
-                                                  instance = uzful.menu.daemons({theme={width=250}})
-                                              end
-                                          end),
-                     awful.button({ }, 3, function ()
-                                              if instance then
-                                                  instance:hide()
-                                                  instance = nil
-                                              else
-                                                  instance = uzful.menu.clients({theme={width=250}})
-                                              end
-                                          end),
-                     awful.button({ }, 4, function ()
-                                              awful.client.focus.byidx(1)
-                                              if client.focus then client.focus:raise() end
-                                          end),
-                     awful.button({ }, 5, function ()
-                                              awful.client.focus.byidx(-1)
-                                              if client.focus then client.focus:raise() end
-                                          end))
+    awful.button({ }, 1, function (c)
+        if c == client.focus then
+            c.minimized = true
+        else
+            c.minimized = false
+            if not c:isvisible() then
+                awful.tag.viewonly(c:tags()[1])
+            end
+            client.focus = c
+            c:raise()
+        end
+    end),
+    awful.button({ }, 2, function ()
+        if instance then
+            instance:hide()
+            instance = nil
+        else
+            instance = uzful.menu.daemons({theme={width=250}})
+        end
+    end),
+    awful.button({ }, 3, function ()
+        if instance then
+            instance:hide()
+            instance = nil
+        else
+            instance = uzful.menu.clients({theme={width=250}})
+        end
+    end),
+    awful.button({ }, 4, function ()
+        awful.client.focus.byidx(1)
+        if client.focus then client.focus:raise() end
+    end),
+    awful.button({ }, 5, function ()
+        awful.client.focus.byidx(-1)
+        if client.focus then client.focus:raise() end
+    end)
+)
 
 for s = 1, screen.count() do
     -- Create a promptbox for each screen
-    mypromptbox[s] = awful.widget.prompt({ prompt = "$ " })
+    mypromptbox[s] = awful.widget.prompt({ prompt = "» " })
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
     -- We need one layoutbox per screen.
     mylayoutbox[s] = awful.widget.layoutbox(s)
@@ -905,16 +523,18 @@ for s = 1, screen.count() do
     mytasklist[s] = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, mytasklist.buttons)
 
     -- Create a notification manager widget
-    mynotification[s] = uzful.notifications(s, {
-        max = screen[s].workarea.height - theme.menu_height,
-        menu = { theme = { width = 342 } },
-        text = '<span size="small">$1</span>' })
+    if rc.conf.notifications then
+        mynotification[s] = uzful.notifications(s, {
+            max = screen[s].workarea.height - theme.menu_height,
+            menu = { theme = { width = 342 } },
+            text = '<span size="small">$1</span>' })
+    end
 
     -- Create the wibox
     mywibox[s] = awful.wibox({ position = "top", screen = s, height = theme.menu_height })
 
 
-    if myrestorelist[s].length > 0 then
+    if myrestorelist and myrestorelist[s].length > 0 then
         myrestorelist[s].widget = uzful.widget.infobox({ screen = s,
                 size = myrestorelist[s].fit,
                 position = "top", align = "left",
@@ -933,31 +553,33 @@ for s = 1, screen.count() do
     local layout = uzful.layout.build({
         layout = wibox.layout.align.horizontal,
         left = { layout = wibox.layout.fixed.horizontal,
-            --mylauncher,
+            mylauncher or nil,
             mytaglist[s],
             mypromptbox[s] },
         middle = mytasklist[s],
         right = { layout = wibox.layout.fixed.horizontal,
             function () return s == SCREEN.LVDS1 and wibox.widget.systray() or nil end,
-            mynotification[s].text,
-            mynetgraphs.small.layout,
-            mycpugraphs.small.layout,
-            mytemp,
-            mytextclock,
-            mynet,
-            myphonebat,
-            mybat,
-            mymem,
+            mynotification[s] and mynotification[s].text or nil,
+            mynetgraphs and mynetgraphs.small.layout or nil,
+            mycpugraphs and mycpugraphs.small.layout or nil,
+            mytemp and mytemp.text or nil,
+            mytextclock or nil,
+            mynet and mynet.widget or nil,
+            myphone and myphone.widget or nil,
+            mybattery and mybattery.widget or nil,
+            mymem or nil,
             mylayoutbox[s] }
     })
 
     mywibox[s]:set_widget(layout)
 
 
-    mynotification[s].text:buttons(awful.util.table.join(
-        awful.button({ }, 1, function () mynotification[s]:toggle_menu() end),
-        awful.button({ }, 3, function () mynotification[s]:toggle() end)
-    ))
+    if mynotification[s] then
+        mynotification[s].text:buttons(awful.util.table.join(
+            awful.button({ }, 1, function () mynotification[s]:toggle_menu() end),
+            awful.button({ }, 3, function () mynotification[s]:toggle() end)
+        ))
+    end
 end
 -- }}}
 
@@ -967,8 +589,8 @@ root.buttons(awful.util.table.join(
     awful.button({ }, 4, awful.tag.viewnext),
     awful.button({ }, 5, awful.tag.viewprev)
 ))
-if syslog_enabled then
-    mysyslogtext:buttons(awful.util.table.join(
+if rc.conf.syslog then
+    uzful.widget.syslog.get_text(mysyslog):buttons(awful.util.table.join(
         awful.button({ }, 3, function () mymainmenu:toggle() end),
         awful.button({ }, 4, awful.tag.viewnext),
         awful.button({ }, 5, awful.tag.viewprev)
@@ -1089,10 +711,10 @@ globalkeys = awful.util.table.join(
     -- Prompt
     awful.key({ modkey,           }, "r",     function () mypromptbox[mouse.screen]:run() end, "prompt"),
     awful.key({ modkey, "Shift"   }, "r",     function () menubar.show(mouse.screen) end, "menubar"),
-    awful.key({ modkey, "Shift"   }, "x",     function () repl.show(mouse.screen) end, "repl"),
+    awful.key({ modkey, "Shift"   }, "x",     function () uzful.widget.repl.show(mouse.screen, { prompt = "› " }) end, "repl"),
     awful.key({ modkey }, "x",
               function ()
-                  awful.prompt.run({ prompt = "> " },
+                  awful.prompt.run({ prompt = "› " },
                   mypromptbox[mouse.screen].widget,
                   awful.util.eval, nil,
                   awful.util.getdir("cache") .. "/history_eval")
@@ -1248,9 +870,7 @@ client.connect_signal("manage", function (c)
     layout.first:buttons(mouse_buttons) -- left
     layout.second:buttons(mouse_buttons) -- middle
 
-    local titlebars_ontop = true
-    if titlebars_ontop then
-
+    if rc.conf.titlebars == 'ontop' then
         uzful.widget.titlebar(c, {
             size = theme.menu_height,
         }).rotation:set_widget(layout)
