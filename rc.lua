@@ -37,6 +37,8 @@ couth.CONFIG.ALSA_CONTROLS = {
 }
 require("backlight") -- uses couch too
 
+beautiful.init(awful.util.getdir("config") .. "/theme.lua")
+
 myscreensmenu = uzful.menu.xrandr({
         -- order
         "LVDS1", "HDMI1", "VGA1",
@@ -44,7 +46,7 @@ myscreensmenu = uzful.menu.xrandr({
         LVDS1 = "Local",
         HDMI1 = "DP++",
         VGA1  = "VGA",
-})
+}, { icons = theme.randr })
 SCREEN = myscreensmenu.const()
 
 
@@ -52,7 +54,6 @@ rc = { conf = require("conf") }
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
-beautiful.init(awful.util.getdir("config") .. "/theme.lua")
 uzful.notifications.debug()
 uzful.notifications.patch()
 uzful.util.patch.vicious()

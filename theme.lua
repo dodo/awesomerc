@@ -144,12 +144,13 @@ theme.layout_dwindle = dir .. "layouts/dwindle.png"
 theme.awesome_icon = dir .. "icons/awesome16.png"
 
 -- You can use your own screen settings icons like this:
-theme.screens_leftof  = dir .. "screens/left-of.png"
-theme.screens_rightof = dir .. "screens/right-of.png"
-theme.screens_above   = dir .. "screens/above.png"
-theme.screens_below   = dir .. "screens/below.png"
-theme.screens_sameas  = dir .. "screens/same-as.png"
-theme.screens_off     = dir .. "screens/off.png"
+theme.randr = {}
+theme.randr.leftof  = dir .. "screens/left-of.png"
+theme.randr.rightof = dir .. "screens/right-of.png"
+theme.randr.above   = dir .. "screens/above.png"
+theme.randr.below   = dir .. "screens/below.png"
+theme.randr.sameas  = dir .. "screens/same-as.png"
+theme.randr.off     = dir .. "screens/off.png"
 
 couth.CONFIG.NOTIFIER_FONT = "mono 5"
 couth.CONFIG.INDICATOR_BARS = {'▏','▎','▍','▌','▋','▊','▉','█'}
