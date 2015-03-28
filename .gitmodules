@@ -9,7 +9,7 @@
 	url = git://github.com/dodo/uzful.git
 [submodule "vicious"]
 	path = vicious
-	url = git://github.com/dodo/vicious.git
+	url = http://git.sysphere.org/vicious
 [submodule "couth"]
 	path = couth
 	url = git://github.com/dodo/couth.git
