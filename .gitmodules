@@ -19,3 +19,6 @@
 [submodule "rodentbane"]
 	path = rodentbane
 	url = git://github.com/dodo/rodentbane.git
+[submodule "lua-dbus"]
+	path = lua-dbus
+	url = git://github.com/dodo/lua-dbus.git

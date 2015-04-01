@@ -21,6 +21,7 @@ require("debian.menu")
 require('freedesktop.utils')
 require('freedesktop.menu')
 -- utils Library
+luadbus = require("lua-dbus")
 utilz = require("utilz")
 uzful = require("uzful")
 require("uzful.restore")
@@ -292,10 +293,10 @@ if rc.conf.sysfs and rc.conf.monitor then
 end
 
 
--- myphoneid = '5608e506aeee6824'
 myphone = nil
 if rc.conf.dbus and rc.conf.phone then
     myphone = uzful.widget.battery.phone({
+        id = '5608e506aeee6824',
         x = 3, y = 5, width = 2, height = 5, -- matching theme/phone/battery.png
         theme = theme.phone, font = theme.widget_font .. " 12",
     })
@@ -329,6 +330,9 @@ if rc.conf.network then
         mynetgraphs.update_active()
         myinfobox.net.height = mynetgraphs.big.height
         myinfobox.net:update()
+        if myphone then
+            myphone.update()
+        end
     end
     mynetgraphs.small.layout:buttons(awful.util.table.join(
         awful.button({ }, 1, mynetgraphs.toggle),
@@ -536,7 +540,7 @@ for s = 1, screen.count() do
     mywibox[s] = awful.wibox({ position = "top", screen = s, height = theme.menu_height })
 
 
-    if myrestorelist and myrestorelist[s].length > 0 then
+    if myrestorelist and myrestorelist[s] and myrestorelist[s].length > 0 then
         myrestorelist[s].widget = uzful.widget.infobox({ screen = s,
                 size = myrestorelist[s].fit,
                 position = "top", align = "left",
