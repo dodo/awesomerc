@@ -10,7 +10,6 @@ theme = {}
 
 theme.font          = "uni 05_53 6"
 theme.widget_font   = "ProggyTinyTT" -- no font size here
-theme.icon_theme    = "default.kde4"
 
 theme.bg_normal     = "#00000022"
 theme.bg_systray    = "#00000022"
@@ -76,6 +75,13 @@ theme.menu_submenu = "> "
 theme.menu_height = 14
 theme.menu_width  = 100
 theme.icon_theme = "default.kde4"
+
+
+-- Variables set for prompt design:
+theme.prompt = {
+    cmd = "» ",
+    lua = "› ",
+}
 
 -- You can add as many variables as
 -- you wish and access them by using
