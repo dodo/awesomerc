@@ -880,14 +880,19 @@ client.connect_signal("manage", function (c)
         uzful.widget.titlebar(c, {
             size = theme.menu_height,
         }).rotation:set_widget(layout)
-    else
+    elseif rc.conf.titlebars then
 --     if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
         local rotation = wibox.layout.rotate()
-        rotation:set_direction("east")
+        rotation:set_direction({
+            top = "north",
+            bottom = "north",
+            left = "east",
+            right = "west",
+        }[rc.conf.titlebars])
         rotation:set_widget(layout)
         awful.titlebar(c, {
             size = theme.menu_height,
-            position = "left",
+            position = rc.conf.titlebars,
         }):set_widget(rotation)
     end
 

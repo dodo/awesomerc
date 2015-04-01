@@ -17,6 +17,6 @@ return {
     dbus = not not dbus,
     tags = 'symbol', -- or 'number' -- tag name style default
     taglist = 'noempty', -- or 'all' -- talist filter default
-    titlebars = 'ontop', -- or 'left' -- titlebar attachment behavior
+    titlebars = 'ontop', -- or 'left' or 'right' or 'top' or 'bottom' or false -- titlebar attachment behavior
 }
 
