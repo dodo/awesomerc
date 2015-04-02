@@ -122,7 +122,8 @@ end
 
 myrestorelist = nil
 if rc.conf.restore then
-    local ok, myrestorelist = pcall(uzful.restore)
+    local opts = type(rc.conf.restore) == 'table' and rc.conf.restore or {}
+    local ok, myrestorelist = pcall(uzful.restore, opts)
     if not ok then
         local err = tostring(myrestorelist)
         myrestorelist = nil
