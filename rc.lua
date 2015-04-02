@@ -122,7 +122,15 @@ end
 
 myrestorelist = nil
 if rc.conf.restore then
-    myrestorelist = pcall(uzful.restore)
+    local ok, myrestorelist = pcall(uzful.restore)
+    if not ok then
+        local err = tostring(myrestorelist)
+        myrestorelist = nil
+        print("myrestorelist errored:", err)
+        naughty.notify({ text = err,
+            title = "Oops, there were errors during startup!",
+            preset = naughty.config.presets.critical })
+    end
 end
 -- }}}
 
