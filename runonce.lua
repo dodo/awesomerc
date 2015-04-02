@@ -9,11 +9,11 @@ local M = {}
 local function getCurrentPid()
     -- get awesome pid from pgrep
     local fpid = io.popen("pgrep -u " .. os.getenv("USER") .. " -o awesome")
-    local pid = fpid:read("*n")
+    local pid = tonumber(fpid:read("*n"))
     fpid:close()
 
     -- sanity check
-    if pid == nil then
+    if pid == nil or pid <= 0 then
         return -1
     end
 
@@ -28,11 +28,11 @@ local function getOldPid(filename)
     end
 
     -- read number
-    local pid = pidFile:read("*n")
+    local pid = tonumber(pidFile:read("*n"))
     pidFile:close()
 
     -- sanity check
-    if not pid or #pid == 0 or pid <= 0 then
+    if not pid or pid <= 0 then
         return -1
     end
 
