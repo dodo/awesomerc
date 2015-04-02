@@ -304,7 +304,7 @@ end
 myphone = nil
 if rc.conf.dbus and rc.conf.phone then
     myphone = uzful.widget.battery.phone({
-        id = '5608e506aeee6824',
+        id = type(rc.conf.phone) == 'string' and rc.conf.phone or nil,
         x = 3, y = 5, width = 2, height = 5, -- matching theme/phone/battery.png
         theme = theme.phone, font = theme.widget_font .. " 12",
     })

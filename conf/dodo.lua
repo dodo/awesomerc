@@ -2,7 +2,7 @@ return {
     launcher = false, -- show awesome button for main menu
     battery = true, -- show notebook battery
     graphs = true, --  show detailed graphs
-    phone = true, -- show phone battery
+    phone = '5608e506aeee6824', -- show phone battery
     sysfs = true, -- listen to sysfs events
     cpu = true, -- show cpu stats
     clock = true, -- show a clock
