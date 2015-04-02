@@ -122,7 +122,7 @@ end
 
 myrestorelist = nil
 if rc.conf.restore then
-    myrestorelist = uzful.restore()
+    myrestorelist = pcall(uzful.restore)
 end
 -- }}}
 

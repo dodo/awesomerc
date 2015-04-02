@@ -32,7 +32,7 @@ local function getOldPid(filename)
     pidFile:close()
 
     -- sanity check
-    if pid <= 0 then
+    if not pid or #pid == 0 or pid <= 0 then
         return -1
     end
 
