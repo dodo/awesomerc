@@ -883,12 +883,12 @@ client.connect_signal("manage", function (c)
     elseif rc.conf.titlebars then
 --     if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
         local rotation = wibox.layout.rotate()
-        rotation:set_direction({
+        rotation:set_direction(({
             top = "north",
             bottom = "north",
             left = "east",
             right = "west",
-        }[rc.conf.titlebars])
+        })[rc.conf.titlebars])
         rotation:set_widget(layout)
         awful.titlebar(c, {
             size = theme.menu_height,
