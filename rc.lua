@@ -369,6 +369,13 @@ if rc.conf.dbus and rc.conf.network == 'wicd' then
             elseif kind == "wired" then
                 mynetgraphs.switch("eth0")
             end
+            mynetgraphs.update_widget()
+        end,
+        ondisconnect = function ()
+            mynetgraphs.update_widget()
+            if myphone then
+                myphone.widget.hide()
+            end
         end,
     })
 end

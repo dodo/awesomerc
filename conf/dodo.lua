@@ -14,7 +14,7 @@ return {
     network = 'wicd', -- or true -- show network & wire stats from wicd via dbus or show at least network stats if true
     notifications = true, -- widget to block notifications and store a history of them
     syslog = uzful.util.module.exists('inotify') and uzful.util.module.exists('socket'),
-    dbus = not not dbus,
+    dbus = not not dbus and uzful.util.module.exists('lua-dbus'),
     tags = 'symbol', -- or 'number' -- tag name style default
     taglist = 'noempty', -- or 'all' -- talist filter default
     titlebars = 'ontop', -- or 'left' or 'right' or 'top' or 'bottom' or false -- titlebar attachment behavior
