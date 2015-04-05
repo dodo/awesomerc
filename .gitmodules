@@ -22,3 +22,6 @@
 [submodule "lua-dbus"]
 	path = lua-dbus
 	url = git://github.com/dodo/lua-dbus.git
+[submodule "lua-mpris"]
+	path = lua-mpris
+	url = git://github.com/dodo/lua-mpris.git

@@ -224,6 +224,16 @@ if rc.conf.launcher then
         menu = mymainmenu,
     })
 end
+
+mympris = nil
+if rc.conf.dbus and rc.conf.mpris then
+    mympris = uzful.widget.mpris({
+        theme = theme.mpris,
+        lookup_icon = function (name)
+            return freedesktop.utils.lookup_icon({ icon = name })
+        end,
+    })
+end
 -- }}}
 
 -- {{{ Wibox
@@ -576,6 +586,7 @@ for s = 1, screen.count() do
         layout = wibox.layout.align.horizontal,
         left = { layout = wibox.layout.fixed.horizontal,
             mylauncher or nil,
+            mympris or nil,
             mytaglist[s],
             mypromptbox[s] },
         middle = mytasklist[s],

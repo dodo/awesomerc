@@ -6,6 +6,7 @@ return {
     sysfs = true, -- listen to sysfs events
     cpu = true, -- show cpu stats
     clock = true, -- show a clock
+    mpris = uzful.util.module.exists('lua-mpris'), -- use mpris client
     memory = true, -- show memory usage
     monitor = true, -- show monitor change notifications
     calendar = true, -- show calendar when hovering clock

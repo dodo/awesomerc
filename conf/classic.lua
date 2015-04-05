@@ -6,6 +6,7 @@ return {
     sysfs = false, -- listen to sysfs events
     cpu = false, -- show cpu stats
     clock = false, -- show a clock
+    mpris = true, -- use mpris client
     memory = false, -- show memory usage
     monitor = false, -- show monitor change notifications
     calendar = false, -- show calendar when hovering clock

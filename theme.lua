@@ -53,6 +53,7 @@ theme.taglist_squares_unsel = dir .. "square.png"
 theme.tasklist_floating_icon = dir .. "floating.png"
 
 -- icons
+theme.none    = dir .. "none.png"
 theme.dock    = dir .. "dock.png"
 theme.memory  = dir .. "memory.png"
 theme.battery = dir .. "battery.png"
@@ -67,6 +68,12 @@ theme.wicd.connecting = dir .. "wicd/connecting.png"
 theme.wicd.not_connected = dir .. "wicd/not_connected.png"
 theme.phone = {}
 theme.phone.battery = dir .. "phone/battery.png"
+theme.mpris = { none = theme.none }
+theme.mpris.next     = dir .. "mpris/next.png"
+theme.mpris.paused   = dir .. "mpris/paused.png"
+theme.mpris.playing  = dir .. "mpris/playing.png"
+theme.mpris.stopped  = dir .. "mpris/stopped.png"
+theme.mpris.previous = dir .. "mpris/previous.png"
 
 -- Variables set for theming the menu:
 -- menu_[bg|fg]_[normal|focus]
@@ -75,6 +82,7 @@ theme.menu_submenu = "> "
 theme.menu_height = 14
 theme.menu_width  = 100
 theme.icon_theme = "default.kde4"
+theme.mpris.height = theme.menu_height
 
 
 -- Variables set for prompt design:
