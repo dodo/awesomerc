@@ -608,14 +608,14 @@ end
 -- {{{ Mouse bindings
 root.buttons(awful.util.table.join(
     awful.button({ }, 3, function () mymainmenu:toggle() end),
-    awful.button({ }, 4, awful.tag.viewnext),
-    awful.button({ }, 5, awful.tag.viewprev)
+    awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
+    awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
 ))
 if rc.conf.syslog then
     uzful.widget.syslog.get_text(mysyslog):buttons(awful.util.table.join(
         awful.button({ }, 3, function () mymainmenu:toggle() end),
-        awful.button({ }, 4, awful.tag.viewnext),
-        awful.button({ }, 5, awful.tag.viewprev)
+        awful.button({ }, 4, function(t) awful.tag.viewnext(awful.tag.getscreen(t)) end),
+        awful.button({ }, 5, function(t) awful.tag.viewprev(awful.tag.getscreen(t)) end)
     ))
 end
 -- }}}
