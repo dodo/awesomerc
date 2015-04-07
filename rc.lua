@@ -58,6 +58,7 @@ rc = { conf = require("conf") }
 uzful.notifications.debug()
 uzful.notifications.patch()
 uzful.util.patch.vicious()
+uzful.util.patch.naughty()
 
 menubar.cache_entries = true
 menubar.show_categories = true   -- Change to false if you want only programs to appear in the menu
@@ -171,6 +172,7 @@ myawesomemenu = {
    { "second screen", myscreensmenu },
    { "wallpapers", uzful.menu.wallpaper.menu(theme.wallpapers)},
    { "layouts", mylayoutmenu.menu_switch },
+   uzful.menu.switch.naughty(),
    uzful.menu.switch.filter({
        filter = taglist_filter,
        labels = {
