@@ -269,6 +269,14 @@ if rc.conf.clock and rc.conf.calendar then
     ))
 end
 
+-- Keyboard map indicator and switcher
+mykeyboardlayout = nil
+if rc.conf.keyboard then
+    mykeyboardlayout = awful.widget.keyboardlayout()
+    print("keyboard layouts: " .. table.concat(mykeyboardlayout.layout, ', '))
+    print("keyboard layout group names: " .. awesome.xkb_get_group_names())
+end
+
 -- Memory Progressbar
 mymem = nil
 if rc.conf.memory then
@@ -594,6 +602,7 @@ for s = 1, screen.count() do
         middle = mytasklist[s],
         right = { layout = wibox.layout.fixed.horizontal,
             function () return s == SCREEN.LVDS1 and wibox.widget.systray() or nil end,
+            mykeyboardlayout or nil,
             mynotification[s] and mynotification[s].text or nil,
             mynetgraphs and mynetgraphs.small.layout or nil,
             mycpugraphs and mycpugraphs.small.layout or nil,

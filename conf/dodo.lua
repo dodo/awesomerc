@@ -10,6 +10,7 @@ return {
     memory = true, -- show memory usage
     monitor = true, -- show monitor change notifications
     calendar = true, -- show calendar when hovering clock
+    keyboard = true, -- show keyboard map indicator and switcher
     temperature = true, -- show cpu temperature stats
     restore = true, -- enable restoring window stats and tag settings
     network = 'wicd', -- or true -- show network & wire stats from wicd via dbus or show at least network stats if true
