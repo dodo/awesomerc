@@ -21,7 +21,7 @@ require("debian.menu")
 require('freedesktop.utils')
 require('freedesktop.menu')
 -- utils Library
-luadbus = require("lua-dbus")
+_, luadbus = pcall(require, "lua-dbus")
 utilz = require("utilz")
 uzful = require("uzful")
 require("uzful.restore")
@@ -322,13 +322,20 @@ if rc.conf.sysfs and rc.conf.monitor then
 end
 
 
-myphone = nil
+myphones = nil
 if rc.conf.dbus and rc.conf.phone then
-    myphone = uzful.widget.battery.phone({
-        id = type(rc.conf.phone) == 'string' and rc.conf.phone or nil,
-        x = 3, y = 5, width = 2, height = 5, -- matching theme/phone/battery.png
-        theme = theme.phone, font = theme.widget_font .. " 12",
-    })
+    myphones = {}
+    local phones = rc.conf.phone
+    if type(phones) ~= 'table' then
+        phones = {phones}
+    end
+    for _, phone in ipairs(phones) do
+        local myphone = uzful.widget.battery.phone({ id = phone,
+            x = 3, y = 5, width = 2, height = 5, -- matching theme/phone/battery.png
+            theme = theme.phone, font = theme.widget_font .. " 12",
+        })
+        table.insert(myphones, myphone)
+    end
 end
 
 mytemp = nil
@@ -359,8 +366,10 @@ if rc.conf.network then
         mynetgraphs.update_active()
         myinfobox.net.height = mynetgraphs.big.height
         myinfobox.net:update()
-        if myphone then
-            myphone.update()
+        if myphones then
+            for _, myphone in ipairs(myphones) do
+                myphone.update()
+            end
         end
     end
     mynetgraphs.small.layout:buttons(awful.util.table.join(
@@ -393,8 +402,10 @@ if rc.conf.dbus and rc.conf.network == 'wicd' then
         end,
         ondisconnect = function ()
             mynetgraphs.update_widget()
-            if myphone then
-                myphone.widget.hide()
+            if myphones then
+                for _, myphone in ipairs(myphones) do
+                    myphone.widget.hide()
+                end
             end
         end,
     })
@@ -422,60 +433,67 @@ end
 
 -- infoboxes funs
 myinfobox = { net = {}, cpu = {}, cal = {}, bat = {}, mem = {}, temp = {}, wifi = {} }
-myinfobox.phone = { bat = {} }
+myinfobox.phones = {}
+
+local function widget_fit_maxsize(a) return a.widget:fit(-1, -1) end
 
 if mynetgraphs then
     myinfobox.net = uzful.widget.infobox({
-            position = "top", align = "right",
-            widget = mynetgraphs.big.layout,
-            height = mynetgraphs.big.height,
-            width = mynetgraphs.big.width })
+        position = "top", align = "right",
+        widget = mynetgraphs.big.layout,
+        height = mynetgraphs.big.height,
+        width = mynetgraphs.big.width })
 end
 if mycpugraphs then
     myinfobox.cpu = uzful.widget.infobox({
-            position = "top", align = "right",
-            widget = mycpugraphs.big.layout,
-            height = mycpugraphs.big.height,
-            width = mycpugraphs.big.width })
+        position = "top", align = "right",
+        widget = mycpugraphs.big.layout,
+        height = mycpugraphs.big.height,
+        width = mycpugraphs.big.width })
 end
 if mytemp then
     myinfobox.temp = uzful.widget.infobox({
-            size = function () return mytemp.graph:fit(-1, -1) end,
-            position = "top", align = "right",
-            widget = uzful.layout.build({
-                    widget = mytemp.graph,
-                    reflection = { vertical = true },
-                    layout = wibox.layout.mirror }) })
+        size = widget_fit_maxsize,
+        position = "top", align = "right",
+        widget = uzful.layout.build({
+            widget = mytemp.graph,
+            reflection = { vertical = true },
+            layout = wibox.layout.mirror }) })
 end
 if mycal then
     myinfobox.cal = uzful.widget.infobox({
-            size = function () return mycal.width,mycal.height end,
-            position = "top", align = "right",
-            widget = mycal.widget })
+        size = function () return mycal.width,mycal.height end,
+        position = "top", align = "right",
+        widget = mycal.widget })
 end
 if mybattery then
     myinfobox.bat = uzful.widget.infobox({
-            size = function () return mybattery.text:fit(-1, -1) end,
-            position = "top", align = "right",
-            widget = mybattery.text })
+        size = widget_fit_maxsize,
+        position = "top", align = "right",
+        widget = mybattery.text })
 end
 if mymem then
     myinfobox.mem = uzful.widget.infobox({
-            size = function () return mymem.text:fit(-1, -1) end,
-            position = "top", align = "right",
-            widget = mymem.text })
+        size = widget_fit_maxsize,
+        position = "top", align = "right",
+        widget = mymem.text })
 end
-if myphone then
-    myinfobox.phone.bat = uzful.widget.infobox({
-            size = function () return myphone.text:fit(-1, -1) end,
-            position = "top", align = "right",
-            widget = myphone.text })
+if myphones then
+    for _, myphone in ipairs(myphones) do
+        table.insert(myinfobox.phones, {
+            widget = myphone.widget,
+            bat = uzful.widget.infobox({
+                size = widget_fit_maxsize,
+                position = "top", align = "right",
+                widget = myphone.text }),
+        })
+    end
 end
 if mynet then
     myinfobox.wifi = uzful.widget.infobox({
-            size = function () return mynet.text:fit(-1, -1) end,
-            position = "top", align = "right",
-            widget = mynet.text })
+        size = widget_fit_maxsize,
+        position = "top", align = "right",
+        widget = mynet.text })
 end
 
 do local _ = utilz.connect_graph_on_mouse_enter -- (widget, box, toggle)
@@ -488,8 +506,12 @@ do local _ = utilz.connect_update_on_mouse_enter -- (widget, box, updatables...)
     if mycal then _(mytextclock, myinfobox.cal, mycal) end
     if mymem then _(mymem, myinfobox.mem) end
     if mynet then _(mynet.widget, myinfobox.wifi) end
-    if myphone then _(myphone.widget, myinfobox.phone.bat) end
     if mybattery then _(mybattery.widget, myinfobox.bat) end
+    if myphones then
+        for i, phone in ipairs(myinfobox.phones) do
+            _(phone.widget, phone.bat)
+        end
+    end
 end
 
 -- Create a wibox for each screen and add it
@@ -600,7 +622,7 @@ for s = 1, screen.count() do
             mytaglist[s],
             mypromptbox[s] },
         middle = mytasklist[s],
-        right = { layout = wibox.layout.fixed.horizontal,
+        right = awful.util.table.join({ layout = wibox.layout.fixed.horizontal,
             function () return s == SCREEN.LVDS1 and wibox.widget.systray() or nil end,
             mykeyboardlayout or nil,
             mynotification[s] and mynotification[s].text or nil,
@@ -609,10 +631,12 @@ for s = 1, screen.count() do
             mytemp and mytemp.text or nil,
             mytextclock or nil,
             mynet and mynet.widget or nil,
-            myphone and myphone.widget or nil,
+            }, uzful.util.table.map(myphones or {}, function (myphone)
+                return myphone and myphone.widget or nil
+            end), {
             mybattery and mybattery.widget or nil,
             mymem or nil,
-            mylayoutbox[s] }
+            mylayoutbox[s] })
     })
 
     mywibox[s]:set_widget(layout)

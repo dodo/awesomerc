@@ -2,7 +2,7 @@ return {
     launcher = true, -- show awesome button for main menu
     battery = false, -- show notebook battery
     graphs = false, --  show detailed graphs
-    phone = false, -- show phone battery
+    phone = false, -- or 'kdeconnect.device.id' or {ids…} -- show phone battery
     sysfs = false, -- listen to sysfs events
     cpu = false, -- show cpu stats
     clock = false, -- show a clock
