@@ -334,6 +334,10 @@ if rc.conf.dbus and rc.conf.phone then
             x = 3, y = 5, width = 2, height = 5, -- matching theme/phone/battery.png
             theme = theme.phone, font = theme.widget_font .. " 12",
         })
+        myphone.notifications = uzful.notifications.phone(myphone.id)
+        myphone.widget:buttons(awful.util.table.join(
+            awful.button({ }, 1, function () myphone.notifications:toggle() end)
+        ))
         table.insert(myphones, myphone)
     end
 end
