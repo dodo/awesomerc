@@ -890,7 +890,7 @@ awful.rules.rules = {
     { rule = { class = "Hamster-time-tracker" },
       properties = { floating = true } },
     { rule = { class = "Skype" },
-    properties = { size_hints_honor = false } },
+      properties = { size_hints_honor = false } },
     -- Set Firefox to always map on tags number 1 of screen 1.
      { rule = { class = "Firefox" },
        properties = { tag = tags[1][1] } },
