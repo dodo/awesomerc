@@ -22,4 +22,16 @@ function utilz.connect_update_on_mouse_enter(widget, box, ...)
     end)
 end
 
+function utilz.hostname()
+  local f = io.open("/proc/sys/kernel/hostname", "r")
+  if f then
+    host = f:read("*line")
+  else
+     local fhost = io.popen("hostname")
+     host = fhost:read()
+     fhost:close()
+  end
+  return host
+end
+
 return utilz
