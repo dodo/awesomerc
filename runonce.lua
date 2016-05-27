@@ -59,8 +59,11 @@ local function shallExecute(oldPid, newPid)
 end
 
 local function getPidFile()
-    local host = awful.util.pread("/proc/sys/kernel/hostname")
-    if host == nil then
+    -- local host = awful.util.pread()
+    local f = io.open("/proc/sys/kernel/hostname", "r")
+    if f then
+      host = f:read("*all")
+    else
        local fhost = io.popen("hostname")
        host = fhost:read()
        fhost:close()
