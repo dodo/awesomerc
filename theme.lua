@@ -2,6 +2,8 @@
 -- Default awesome theme --
 ---------------------------
 
+local rc = { conf = require("conf") }
+
 local awful = require("awful")
 local couth = require("couth")
 local naughty = require("naughty")
@@ -169,6 +171,12 @@ theme.randr.off     = dir .. "screens/off.png"
 couth.CONFIG.NOTIFIER_FONT = "mono 5"
 couth.CONFIG.INDICATOR_BARS = {'▏','▎','▍','▌','▋','▊','▉','█'}
 couth.CONFIG.INDICATOR_BORDERS = {'',''}
+
+if rc.conf.theme ~= nil then
+  for k,v in pairs(rc.conf.theme) do
+    theme[k] = v
+  end
+end
 
 return theme
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:encoding=utf-8:textwidth=80
