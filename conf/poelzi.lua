@@ -2,7 +2,7 @@ local dir = awful.util.getdir("config") .. "/theme/"
 local posix = require 'posix'
 
 -- fixes issues with qt apps looking shitty, no icons etc
-posix.setenv("QT_QPA_PLATFORMTHEME", "gnome")
+posix.setenv("QT_QPA_PLATFORMTHEME", "kde")
 
 return {
     launcher = false, -- show awesome button for main menu
