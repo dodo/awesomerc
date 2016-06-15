@@ -1,7 +1,20 @@
 require 'fixes'
- -- Standard awesome library
+
 gears = require("gears")
 awful = require("awful")
+
+-- set the loading wallpaper. this will be replaced by the first entry after loading, but without
+-- we get corruption of the root window buffer which causes ugly artifacts if the background entries
+-- are wrong
+local loading_image = awful.util.getdir("config") .. "/theme/loading.png"
+for s = 1, screen.count() do
+     gears.wallpaper.centered(loading_image, s, "#000000")
+end
+
+-- usefull for debugging
+-- inspect = require('inspect')
+
+-- Standard awesome library
 awful.autofocus = require("awful.autofocus")
 awful.rules = require("awful.rules")
 -- Widget and layout library
@@ -37,6 +50,7 @@ couth.CONFIG.ALSA_CONTROLS = {
     'PCM',
 }
 require("backlight") -- uses couch too
+
 
 beautiful.init(awful.util.getdir("config") .. "/theme.lua")
 
@@ -102,15 +116,6 @@ awful.layout.layouts = {
     awful.layout.suit.magnifier
 }
 
--- }}}
-
--- {{{ Wallpaper
-if beautiful.wallpaper then
-    for s = 1, screen.count() do
-        gears.wallpaper.centered(beautiful.wallpaper, s, theme.bg_normal)
-    end
-end
--- }}}
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
@@ -167,10 +172,12 @@ taglist_filter = uzful.util.functionlist({
     awful.widget.taglist.filter.all })
 if rc.conf.taglist == 'all' then taglist_filter.next() end
 
+mywallpapermenu = uzful.menu.wallpaper.menu(rc.conf.wallpapers or theme.default_wallpapers)
+
 myawesomemenu = {
    { "system", mysystemmenu },
    { "second screen", myscreensmenu },
-   { "wallpapers", uzful.menu.wallpaper.menu(theme.wallpapers)},
+   { "wallpapers", mywallpapermenu },
    { "layouts", mylayoutmenu.menu_switch },
    uzful.menu.switch.naughty(),
    uzful.menu.switch.filter({
@@ -211,7 +218,10 @@ mymainmenu = awful.menu({ max = 100,
 if rc.conf.syslog then
     -- luarocks install inotify INOTIFY_INCDIR=/usr/include/x86_64-linux-gnu
     mysyslog = uzful.widget.syslog({
-        screen = SCREEN.LVDS1, lines = 64,
+        screen = SCREEN.LVDS1,
+        lines = theme.syslog_lines or 64,
+        fg = theme.syslog_fg,
+        bg = theme.syslog_bg,
         logs = {
             syslog = { file = "/var/log/syslog" },
 --             xsessionerrors = { file = "/home/dodo/.xsession-errors" },
@@ -971,5 +981,9 @@ client.connect_signal("unfocus", function(c)
     --c.opacity = 0.5
 end)
 
-require("autostart")
+-- we now load the first, aka default background
+if #mywallpapermenu > 0 then
+  uzful.menu.wallpaper.set_wallpaper(mywallpapermenu[1]._item)
+end
 
+require("autostart")
