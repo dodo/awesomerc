@@ -22,8 +22,11 @@ return {
     tags = 'symbol', -- or 'number' -- tag name style default
     taglist = 'noempty', -- or 'all' -- talist filter default
     titlebars = 'ontop', -- or 'left' or 'right' or 'top' or 'bottom' or false -- titlebar attachment behavior
+    animation = true,
     autostart = {
-      "akonaditray"
+      -- "unagi" -- http://unagi.mini-dweeb.org/
+      "akonaditray",
+      "zeal",
     },
     wallpapers = {
         { dir .. "icons/awesome16.png", center = true},

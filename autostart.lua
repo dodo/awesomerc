@@ -15,9 +15,11 @@ if rc.conf.dbus and rc.conf.phone then
     end
 end
 
+
 if rc.conf.autostart and type(rc.conf.autostart) == "table" then
     for _, prg in ipairs(rc.conf.autostart) do
         print("autostart: run " .. prg)
         run(prg)
     end
 end
+

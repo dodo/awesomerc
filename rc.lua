@@ -3,13 +3,19 @@ require 'fixes'
 gears = require("gears")
 awful = require("awful")
 
+local timer = (type(timer) == 'table' and timer or require("gears.timer"))
+
 -- set the loading wallpaper. this will be replaced by the first entry after loading, but without
 -- we get corruption of the root window buffer which causes ugly artifacts if the background entries
 -- are wrong
-local loading_image = awful.util.getdir("config") .. "/theme/loading.png"
-for s = 1, screen.count() do
-     gears.wallpaper.centered(loading_image, s, "#000000")
+local function loading(state)
+    local loading_image = awful.util.getdir("config") .. "/theme/" .. state .. ".png"
+    for s = 1, screen.count() do
+        gears.wallpaper.centered(loading_image, s, "#000000")
+    end
 end
+
+loading "animation/load"
 
 -- usefull for debugging
 -- inspect = require('inspect')
@@ -35,6 +41,7 @@ require('freedesktop.utils')
 require('freedesktop.menu')
 -- utils Library
 _, luadbus = pcall(require, "lua-dbus")
+_, posix = pcall(require, "posix")
 utilz = require("utilz")
 uzful = require("uzful")
 require("uzful.restore")
@@ -87,6 +94,11 @@ vicious.cache(vicious.widgets.net)
 terminal = "x-terminal-emulator"
 editor = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
+
+if posix then
+    posix.setenv('QT_QDA_PLATFORMTHEME', "kde")
+end
+
 
 freedesktop.utils.terminal = terminal
 freedesktop.utils.icon_theme = theme.icon_theme
@@ -143,6 +155,7 @@ end
 
 -- {{{ Menu
 -- Create a laucher widget and a main menu
+
 
 detailed_graphs = uzful.menu.toggle_widgets()
 if not rc.conf.graphs then detailed_graphs.toggle() end
@@ -442,8 +455,6 @@ if rc.conf.cpu then
         table.insert(detailed_graphs.widgets, widget)
     end
 end
-
-
 
 -- infoboxes funs
 myinfobox = { net = {}, cpu = {}, cal = {}, bat = {}, mem = {}, temp = {}, wifi = {} }
@@ -847,6 +858,7 @@ for s = 1, screen.count() do
             end))
 end
 
+
 -- Bind all key numbers to tags.
 -- Be careful: we use keycodes to make it works on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
@@ -1009,9 +1021,36 @@ client.connect_signal("unfocus", function(c)
     --c.opacity = 0.5
 end)
 
--- we now load the first, aka default background
-if #mywallpapermenu > 0 then
-  uzful.menu.wallpaper.set_wallpaper(mywallpapermenu[1]._item or mywallpapermenu[2]._item)
+
+
+if rc.conf.animation then
+    local animation = timer({timeout = 0.1})
+    local frame = 0
+    animation:connect_signal('timeout', function ()
+        frame = frame + 1
+        print("animating …", frame)
+        if frame < 11 then
+            loading(string.format("animation/%02d", frame))
+        elseif frame == 11 then
+            loading "icons/awesome16"
+        elseif frame == 12 then
+            -- we now load the first, aka default background
+            if #mywallpapermenu > 0 then
+                uzful.menu.wallpaper.set_wallpaper(mywallpapermenu[1]._item or mywallpapermenu[2]._item)
+            end
+            animation:stop()
+            print("animation finished")
+        elseif frame > 12 then
+            animation:stop()
+            print("animation stopped")
+        end
+    end)
+    animation:start()
+else
+    -- we now load the first, aka default background
+    if #mywallpapermenu > 0 then
+        uzful.menu.wallpaper.set_wallpaper(mywallpapermenu[1]._item or mywallpapermenu[2]._item)
+    end
 end
 
 require("autostart")

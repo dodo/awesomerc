@@ -1,10 +1,17 @@
 require('awful.util')
-local posix = require("posix")
+local _, posix = pcall(require, "posix")
 local hostname = require("utilz").hostname()
 -- return require("conf.classic")
-local login = posix.getlogin()
 
-local function try_configs(lst)
+
+local configs = {
+  'default_' ..  hostname,
+  'default',
+  'classic',
+}
+
+
+local function try(lst)
   local cdir = awful.util.getdir ('config')
   for _, suffix in ipairs(lst) do
     if awful.util.file_readable(cdir .. '/conf/' .. suffix .. '.lua') then
@@ -21,16 +28,13 @@ local function try_configs(lst)
   end
 end
 
-conf = try_configs {
-  login .. '_' ..  hostname,
-  login,
-  'default_' ..  hostname,
-  'default',
-  'classic'
-}
 
-if conf then
-  return conf
-else
-  return {}
+if posix then
+    local login = posix.getlogin()
+    table.insert(configs, 1, login)
+    table.insert(configs, 1, login .. '_' ..  hostname)
 end
+
+
+return try(configs) or {}
+
