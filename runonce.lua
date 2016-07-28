@@ -2,6 +2,7 @@
 -- Any questions, criticism or praise just drop me an email
 
 local awful = { util = require('awful.util') }
+local hostname = require('utilz').hostname
 
 local M = {}
 
@@ -58,13 +59,10 @@ local function shallExecute(oldPid, newPid)
     return true
 end
 
+
 local function getPidFile()
-    local host = awful.util.pread("/proc/sys/kernel/hostname")
-    if host == nil then
-       local fhost = io.popen("hostname")
-       host = fhost:read()
-       fhost:close()
-    end
+    -- local host = awful.util.pread()
+    host = hostname()
     return awful.util.getdir("cache") .. "/awesome." .. host .. ".pid"
 end
 
