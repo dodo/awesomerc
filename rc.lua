@@ -1011,7 +1011,7 @@ end)
 
 -- we now load the first, aka default background
 if #mywallpapermenu > 0 then
-  uzful.menu.wallpaper.set_wallpaper(mywallpapermenu[1]._item)
+  uzful.menu.wallpaper.set_wallpaper(mywallpapermenu[1]._item or mywallpapermenu[2]._item)
 end
 
 require("autostart")
