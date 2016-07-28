@@ -1033,14 +1033,14 @@ if rc.conf.animation then
             loading(string.format("animation/%02d", frame))
         elseif frame == 11 then
             loading "icons/awesome16"
-        elseif frame == 12 then
+        elseif frame == 16 then
             -- we now load the first, aka default background
             if #mywallpapermenu > 0 then
                 uzful.menu.wallpaper.set_wallpaper(mywallpapermenu[1]._item or mywallpapermenu[2]._item)
             end
             animation:stop()
             print("animation finished")
-        elseif frame > 12 then
+        elseif frame > 16 then
             animation:stop()
             print("animation stopped")
         end
