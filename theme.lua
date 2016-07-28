@@ -122,24 +122,8 @@ theme.titlebar_maximized_button_focus_inactive  = dir .. "titlebar/maximized_foc
 theme.titlebar_maximized_button_normal_active = dir .. "titlebar/maximized_normal_active.png"
 theme.titlebar_maximized_button_focus_active  = dir .. "titlebar/maximized_focus_active.png"
 
--- You can use your own command to set your wallpaper
-theme.wallpapers = {
-    { dir .. "icons/awesome16.png", center = true},
-    {"/home/dodo/Pictures/7003_68fd_black.png", center = true},
-    {"/home/dodo/Pictures/minimalcluster1900x1080.png", center = true},
-    {"/home/dodo/Pictures/minimalblueprint1900x1080.png", center = true},
-    {"/home/dodo/Pictures/blue_print_desktop_1600x1200_tranformed.jpg", maximize=true},
-    {"/home/dodo/Pictures/161502-strutingcolours.jpg", maximize=true},
-    {"/home/dodo/Pictures/meh.ro9016.png", center = true},
-    "/home/dodo/Pictures/into_the_woods_1280x800.jpg",
-    "/home/dodo/Pictures/planetoid_3_1280x800.png",
-    "/home/dodo/Pictures/meh.ro7944.png",
-    "/home/dodo/Pictures/meh.ro2263.png",
-    "/home/dodo/Pictures/meh.ro3274.jpg",
-}
--- default
-theme.wallpaper = theme.wallpapers[1][1]
---
+-- default wallpapers
+theme.default_wallpapers = {{ dir .. "icons/awesome64.png", center = true }}
 
 -- You can use your own layout icons like this:
 theme.layout_rows = dir .. "layouts/rows.png"
@@ -177,6 +161,14 @@ if rc.conf.theme ~= nil then
     theme[k] = v
   end
 end
+
+-- set the default wallpapers if the user has not set any
+if rc.conf.wallpapers == nil then
+  rc.conf.wallpapers = theme.default_wallpapers
+end
+
+-- we need a early on wallpaper
+theme.wallpaper = theme.default_wallpaper
 
 return theme
 -- vim: filetype=lua:expandtab:shiftwidth=4:tabstop=8:softtabstop=4:encoding=utf-8:textwidth=80
