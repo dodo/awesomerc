@@ -10,7 +10,7 @@ local naughty = require("naughty")
 
 theme = {}
 
-theme.font          = "uni 05_53 6"
+theme.font          = "uni 05_53 5"
 theme.widget_font   = "ProggyTinyTT" -- no font size here
 
 theme.bg_normal     = "#00000022"
@@ -83,7 +83,7 @@ theme.mpris.previous = dir .. "mpris/previous.png"
 theme.menu_submenu = "> "
 theme.menu_height = 14
 theme.menu_width  = 100
-theme.icon_theme = "default.kde4"
+theme.icon_theme = "breeze-dark"--,"default.kde4","hicolor"
 theme.mpris.height = theme.menu_height
 
 

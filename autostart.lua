@@ -1,5 +1,6 @@
 local run = require("runonce").run
-local spawn = require("awful.util").spawn
+local spawn = require("awful.spawn").spawn
+local _, posix = pcall(require, "posix")
 
 if rc.conf.dbus and rc.conf.phone then
     spawn "kdeinit4" -- start kded dbus service
@@ -21,5 +22,9 @@ if rc.conf.autostart and type(rc.conf.autostart) == "table" then
         print("autostart: run " .. prg)
         run(prg)
     end
+end
+
+if posix then
+    posix.setenv('QT_QDA_PLATFORMTHEME', "kde")
 end
 

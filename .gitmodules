@@ -1,9 +1,6 @@
 [submodule "awesome-freedesktop"]
-	path = awesome-freedesktop
-	url = git://github.com/terceiro/awesome-freedesktop.git
-[submodule "obvious"]
-	path = obvious
-	url = git://github.com/hoelzro/obvious.git
+	path = freedesktop
+	url = git://github.com/copycat-killer/awesome-freedesktop.git
 [submodule "uzful"]
 	path = uzful
 	url = git://github.com/dodo/uzful.git
@@ -23,5 +20,5 @@
 	path = lua-dbus
 	url = git://github.com/dodo/lua-dbus.git
 [submodule "lua-mpris"]
-	path = lua-mpris
+	path = mpris
 	url = git://github.com/dodo/lua-mpris.git

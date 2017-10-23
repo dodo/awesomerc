@@ -1,7 +1,7 @@
 -- @author Peter J. Kranz (Absurd-Mind, peter@myref.net)
 -- Any questions, criticism or praise just drop me an email
 
-local awful = { util = require('awful.util') }
+local awful = { util = require('awful.util'), spawn = require('awful.spawn') }
 local hostname = require('utilz').hostname
 
 local M = {}
@@ -61,8 +61,7 @@ end
 
 
 local function getPidFile()
-    -- local host = awful.util.pread()
-    host = hostname()
+    local host = hostname()
     return awful.util.getdir("cache") .. "/awesome." .. host .. ".pid"
 end
 
@@ -71,7 +70,7 @@ end
 function M.run(shellCommand)
     -- check and Execute
     if shallExecute(M.oldPid, M.currentPid) then
-        awful.util.spawn_with_shell(shellCommand)
+        awful.spawn.with_shell(shellCommand)
     end
 end
 

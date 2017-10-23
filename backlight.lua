@@ -29,7 +29,7 @@
 --    awful.key({ modkey, "Shift" }, "XF86MonBrightnessUp",    function () couth.notifier:notify( couth.back:setLight('+10')) end) end)
 --
 ---------------------------------------------------------------------------
-local pread = require("awful.util").pread
+local pread = require("uzful.util").pread
 local couth = require("couth")
 couth.back = {}
 
