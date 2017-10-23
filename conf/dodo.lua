@@ -24,7 +24,7 @@ return {
     dbus = not not dbus and uzful.util.module.exists('lua-dbus'),
     tags = 'symbol', -- or 'number' -- tag name style default
     taglist = 'noempty', -- or 'all' -- talist filter default
-    titlebars = 'top',--'ontop', -- or 'left' or 'right' or 'top' or 'bottom' or false -- titlebar attachment behavior
+    titlebars = 'ontop', -- or 'left' or 'right' or 'top' or 'bottom' or false -- titlebar attachment behavior
     animation = true,
     autostart = {
       -- "unagi" -- http://unagi.mini-dweeb.org/

@@ -837,10 +837,7 @@ clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end, "fullscreen"),
     awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end, "kill"),
     awful.key({ modkey,           }, "q",      function (c) c:kill()                         end, "kill"),
-    awful.key({ modkey, "Control" }, "space",  function (c)
-        awful.client.floating.toggle(c)
-        c.titlebars_enabled = c.floating
-    end, "toggle floating"),
+    awful.key({ modkey, "Control" }, "space",  function (c) awful.client.floating.toggle(c)  end, "toggle floating"),
     awful.key({ modkey, "Control" }, "Return", function (c) c:swap(awful.client.getmaster()) end, "get master"),
     awful.key({ modkey,           }, "o",      function(c) awful.client.movetoscreen(c,c.screen-1) end, "move to previous screen"),
     awful.key({ modkey,           }, "p",      function(c) awful.client.movetoscreen(c,c.screen+1) end, "move to next screen"),
@@ -945,7 +942,7 @@ awful.rules.rules = {
     }, properties = { floating = true, titlebars_enabled = true } },
     -- Add titlebars to normal clients and dialogs
     { rule_any = {type = { "normal", "dialog" }
-     }, properties = { titlebars_enabled = false }
+     }, properties = { titlebars_enabled = true }
    },
 }
 -- }}}
@@ -969,10 +966,13 @@ end)
 
 -- Add a titlebar if titlebars_enabled is set to true in the rules.
 client.connect_signal("request::titlebars", function(c)
-  print("TITLBARS", c)
+    local mouse_buttons = awful.util.table.join(
+        awful.button({ }, 1, function () awful.mouse.client.move(c)   end),
+        awful.button({ }, 3, function () awful.mouse.client.resize(c) end))
     local layout = {
         layout = wibox.layout.align.horizontal,
         { layout = wibox.layout.fixed.horizontal, -- left
+            buttons = mouse_buttons,
             awful.titlebar.widget.iconwidget(c) },
         awful.titlebar.widget.titlewidget(c), -- middle
         { layout = wibox.layout.fixed.horizontal, -- right
@@ -982,18 +982,13 @@ client.connect_signal("request::titlebars", function(c)
             awful.titlebar.widget.floatingbutton(c),
             awful.titlebar.widget.closebutton(c) }
     }
-    local mouse_buttons = awful.util.table.join(
-        awful.button({ }, 1, function () awful.mouse.client.move(c)   end),
-        awful.button({ }, 3, function () awful.mouse.client.resize(c) end))
-    layout[1]:buttons(mouse_buttons) -- left
-    layout[2]:buttons(mouse_buttons) -- middle
+    layout[2]:buttons(mouse_buttons)
 
     if rc.conf.titlebars == 'ontop' then
         uzful.widget.titlebar(c, {
             size = theme.menu_height,
-        }).rotation:setup(layout)
+        }):setup(layout)
     elseif rc.conf.titlebars then
---     if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
         awful.titlebar(c, {
             size = theme.menu_height,
             position = rc.conf.titlebars,
