@@ -10,7 +10,7 @@ local naughty = require("naughty")
 
 theme = {}
 
-theme.font          = "uni 05_53 5"
+theme.font          = "uni 05_53 6"
 theme.widget_font   = "ProggyTinyTT" -- no font size here
 
 theme.bg_normal     = "#00000022"

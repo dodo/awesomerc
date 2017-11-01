@@ -205,7 +205,7 @@ myawesomemenu = {
    { "keybindings", keydoc.display },
    { "hotkeys", function() return false, hotkeys_popup.show_help end},
    { "restart", awesome.restart },
-   { "quit", awesome.quit },
+   { "quit", function () awesome.quit() end },
 }
 
 do local items = {max = 100}
@@ -262,7 +262,7 @@ end
 mytextclock = nil
 if rc.conf.clock then
     mytextclock = wibox.widget.textclock(' %H:%M ')
-    mytextclock:set_font("sans 5")
+    mytextclock:set_font("sans 4")
 end
 
 mycal = nil
@@ -310,7 +310,7 @@ if rc.conf.memory then
     vicious.register(mymem.progress, vicious.widgets.mem, "$1", 4)
     -- Memory Text
     mymem.text = wibox.widget.textbox()
-    mymem.text:set_font(theme.widget_font .. " 12")
+    mymem.text:set_font(theme.widget_font .. " 7")
     vicious.register(mymem.text, vicious.widgets.mem,
         '$4mb free, $1%', 60)
 end
@@ -321,7 +321,7 @@ if rc.conf.sysfs and rc.conf.battery then
     mybattery = uzful.widget.battery({
         bat = 'BAT0', ac = 'AC',
         x = 3, y = 4, width = 3, height = 7, -- matching theme/battery.png
-        theme = theme, font = theme.widget_font .. " 12",
+        theme = theme, font = theme.widget_font .. " 7",
     })
 end
 
@@ -352,7 +352,7 @@ if rc.conf.dbus and rc.conf.phone then
     for _, phone in ipairs(phones) do
         local myphone = uzful.widget.battery.phone({ id = phone,
             x = 3, y = 5, width = 2, height = 5, -- matching theme/phone/battery.png
-            theme = theme.phone, font = theme.widget_font .. " 12",
+            theme = theme.phone, font = theme.widget_font .. " 7",
         })
         myphone.notifications = uzful.notifications.phone(myphone.id)
         myphone.widget:buttons(awful.util.table.join(
@@ -367,7 +367,7 @@ if rc.conf.temperature then
     -- Temperature Info
     mytemp = uzful.widget.temperature({
         width = 161, height = 42,
-        font = "sans 6",
+        font = "sans 5",
     })
     table.insert(detailed_graphs.widgets, mytemp.graph)
     vicious.register(mytemp.notifications, vicious.widgets.thermal, "$1", 30, "thermal_zone0")
