@@ -18,6 +18,7 @@ return {
     notifications = false, -- widget to block notifications and store a history of them
     syslog = false, --uzful.util.module.exists('inotify') and uzful.util.module.exists('socket'),
     dbus = not not dbus,
+    default_layout = 12, -- index of awful.layout.layouts
     tags = 'number', -- or 'number' -- tag name style default
     taglist = 'all', -- or 'all' -- talist filter default
     titlebars = 'left', -- or 'left' or 'right' or 'top' or 'bottom' or false -- titlebar attachment behavior

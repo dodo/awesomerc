@@ -132,11 +132,6 @@ awful.layout.layouts = {
 -- Define a tag table which hold all screen tags.
 --tags = {}
 tag_names = {"☼", "✪", "⌥", "✇", "⌤", "⍜", "⌬", "♾", "⌘", "⚗", "Ω", "·"}
---for s = 1, screen.count() do
-    -- Each screen has its own tag table.
- --   tags[s] = awful.tag(tag_names, s, awful.layout.layouts[12])
---end
-
 -- }}}
 
 -- {{{ Menu
@@ -592,7 +587,7 @@ mytasklist.buttons = awful.util.table.join(
 )
 
 awful.screen.connect_for_each_screen(function(s)
-    awful.tag(tag_names, s, awful.layout.layouts[12])
+    awful.tag(tag_names, s, awful.layout.layouts[rc.conf.default_layout or 12])
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt({ prompt = theme.prompt.cmd })
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
@@ -935,10 +930,9 @@ awful.rules.rules = {
     -- Floating clients.
     { rule_any = { 
       instance = {"pinentry","copyq","DTA"},
-      class = {"mplayer2" ,"mpv","xlogo","qlua","vlc","feh","Skype","Hamster-time-tracker","Kruler"},
+      class = {"mplayer2" ,"mpv","xlogo","qlua","vlc","feh","Inkview","Skype","Hamster-time-tracker","Kruler"},
       name = {"Event Tester"},
       role = {"pop-up","AlarmWindow","ConfigManager"},
-      properties = {floating = true},
     }, properties = { floating = true, titlebars_enabled = true } },
     -- Add titlebars to normal clients and dialogs
     { rule_any = {type = { "normal", "dialog" }
