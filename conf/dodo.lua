@@ -23,6 +23,7 @@ return {
     syslog = uzful.util.module.exists('inotify') and uzful.util.module.exists('socket'),
     dbus = not not dbus and uzful.util.module.exists('lua-dbus'),
     tags = 'symbol', -- or 'number' -- tag name style default
+    default_layout = 'max', -- name or index of awful.layout.layouts
     taglist = 'noempty', -- or 'all' -- talist filter default
     titlebars = 'ontop', -- or 'left' or 'right' or 'top' or 'bottom' or false -- titlebar attachment behavior
     animation = true,

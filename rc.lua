@@ -74,7 +74,7 @@ SCREEN = myscreensmenu.const()
 
 
 rc = { conf = require("conf") }
-
+rc.conf.default_layout = rc.conf.default_layout or 'floating'
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
@@ -144,7 +144,7 @@ if not rc.conf.graphs then detailed_graphs.toggle() end
 myfreedesktopmenu = freedesktop and freedesktop.menu.build{icon_size = theme.menu_height}
 
 mylayoutmenu = uzful.menu.layouts(awful.layout.layouts, { align = "right", width = 60 })
-mylayoutmenu:add({ "actions", uzful.menu.tag_info({ theme = { width = 150 } }) })
+mylayoutmenu:add({ "actions", uzful.menu.tag_info({ default = rc.conf.default_layout, layouts = awful.layout.layouts, theme = { width = 150 } }) })
 
 mysystemmenu = {}
 unagi         = function () awful.spawn.with_shell("unagi")             end
@@ -587,7 +587,7 @@ mytasklist.buttons = awful.util.table.join(
 )
 
 awful.screen.connect_for_each_screen(function(s)
-    awful.tag(tag_names, s, awful.layout.layouts[rc.conf.default_layout or 12])
+    awful.tag(tag_names, s, uzful.layout.get(rc.conf.default_layout))
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt({ prompt = theme.prompt.cmd })
     -- Create an imagebox widget which will contains an icon indicating which layout we're using.
